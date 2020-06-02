@@ -16,7 +16,7 @@ from nsetools import Nse
 import yfinance as yf
 from pricingdata.models import *
 
-test_mode = False
+test_mode = True
 no_run = 3
 
 

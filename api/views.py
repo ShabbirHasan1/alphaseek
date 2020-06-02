@@ -336,7 +336,7 @@ def read_company(request):
 
         # Filters/Sorting Start
         if search !=None and search !="":
-            tranObjs = tranObjs.filter(name__icontains=search)
+            tranObjs = tranObjs.filter(Q(name__icontains=search) | Q(nse_ticker__icontains=search))
 
         if sort_by !=None and sort_by !="" and sort_by != "none":
             if order == "asc":
@@ -445,6 +445,7 @@ def crud_company(request):
                     # ,'last_nse_ticker_date':str(last_nse_ticker_date.strftime('%d-%b-%Y'))
                     ,'min_nse_ticker_date':str(first_nse_ticker_date['date__min'])
                     ,'last_nse_ticker_date':str(last_nse_ticker_date['date__max'])
+                    ,'total_nse_prices':TickerData.count()
                 })
     
     else:
@@ -462,6 +463,157 @@ def crud_company(request):
     obj['error_list'] = error_message_list
     return HttpResponse(json.dumps(obj), content_type='application/json')
 
+
+def read_company_nse_prices(request):
+    error = False
+    success = False
+    error_message_list = []
+    message = "Request Recieved!"
+    filters = {}
+    num_pages = 1
+    total_records = 0 
+    tranObjs = TickerHistoricDay.objects.none()
+    page_num = get_param(request, 'page_num', "1")
+    page_size = get_param(request, 'page_size', "10000")
+    # search = get_param(request,'search',None) 
+    sort_by = get_param(request,'sort_by',None) 
+    order = get_param(request,'order_by',None)    
+    data_id = get_param(request,'data_id',None)
+    ticker = get_param(request,'ticker',None)
+    no_parameter = 0
+    if data_id != None and data_id != "":
+        tranObjs = TickerHistoricDay.objects.filter(company__id=data_id)
+    elif ticker != None and ticker != "":
+        tranObjs = TickerHistoricDay.objects.filter(company__nse_ticker=ticker)
+    else:
+        no_parameter = 1
+        tranObjs = TickerHistoricDay.objects.none()
+
+        # Filters/Sorting Start
+        # if search !=None and search !="":
+        #     tranObjs = tranObjs.filter(Q(name__icontains=search) | Q(nse_ticker__icontains=search))
+        if sort_by !=None and sort_by !="" and sort_by != "none":
+            if order == "asc":
+                tranObjs = tranObjs.order_by(sort_by)
+            else:
+                tranObjs = tranObjs.order_by("-" + sort_by)
+        # Filters/Sorting End
+    # pagination variable
+
+    total_records = tranObjs.count()    
+    if page_num != None and page_num != "":
+        page_num = int(page_num)
+        tranObjs = Paginator(tranObjs, int(page_size))
+        try:
+            tranObjs = tranObjs.page(page_num)
+        except:
+            tranObjs = tranObjs
+        num_pages = int(math.ceil(total_records / float(int(page_size))))
+    # data = list(tranObjs)
+    if no_parameter == 1:
+        message = "No parameter shared"
+    else:
+        message  = "Success!"
+    success = True
+    
+    filters['sort_by'] = [
+                        {'value':'date','label':'Date'},
+                       ]
+                
+
+    filters['order_by'] = [{'value':'asc','label':'Ascending'},
+                           {'value':'desc','label':'Descending'}]
+
+    return({
+        'output':tranObjs,
+        'num_pages':num_pages,
+        'total_records':total_records,
+        'error':error,
+        'error_message_list':error_message_list,
+        'filter':filters,
+        'message':message,
+        'success':success
+    })
+
+def crud_company_nse_prices(request):
+    obj = {}
+    status = False
+    result = {}
+    message = "Request Recieved"
+    filters = {}
+    tranObjs = Exchange.objects.none()
+    operation = get_param(request, 'operation', None)
+    error = False
+    error_message_list = []
+    num_pages = 1
+    total_records = 0 
+    
+    check_operation = listvar_check(variable_name='operation',value=operation,allowedlist=operations_allowed_default)
+    if not check_operation['error']:
+        if operation == "read":
+            pass
+            out_read_company_nse_prices = read_company_nse_prices(request) 
+            message = out_read_company_nse_prices['message']               
+            tranObjs = out_read_company_nse_prices['output']
+            error_message_list.extend(out_read_company_nse_prices['error_message_list'])               
+            error = out_read_company_nse_prices['error']     
+            status = out_read_company_nse_prices['success']     
+            num_pages     = out_read_company_nse_prices['num_pages']          
+            filters       = out_read_company_nse_prices['filter']     
+            total_records = out_read_company_nse_prices['total_records']          
+
+        if operation in ["create","update"]:
+            pass
+            # out_create_update_exchange = create_update_exchange(request) 
+            # message = out_create_update_exchange['message']               
+            # tranObjs = out_create_update_exchange['output']
+            # error_message_list.extend(out_create_update_exchange['error_message_list'])               
+            # error = out_create_update_exchange['error']   
+            # status = out_create_update_exchange['success']          
+
+        if operation == "delete":
+            pass
+            # out_delete_exchange = delete_exchange(request) 
+            # message = out_delete_exchange['message']               
+            # tranObjs = out_delete_exchange['output']               
+            # error_message_list.extend(out_delete_exchange['error_message_list'])               
+            # error = out_delete_exchange['error']     
+            # status = out_delete_exchange['success']           
+
+        if not error:
+            
+            result['company'] = {
+                    'company_name':tranObjs[0].company.name,
+                    'nse_ticker':tranObjs[0].company.nse_ticker,
+                    'exchange':tranObjs[0].exchange.exchange_name,
+                    }
+            result['prices']=[]
+            for trans in tranObjs:            
+                result['prices'].append({
+                    'date':str(trans.date)[:19]
+                    ,'price_high':trans.price_high
+                    ,'price_low':trans.price_low
+                    ,'price_close':trans.price_close
+                    ,'price_open':trans.price_open
+                    ,'volume':trans.volume
+                    ,'dividends':trans.dividends
+                    ,'stock_split':trans.stock_split
+                })
+    
+    else:
+        error = check_operation['error']
+        message = "Operation Not Specified"
+        error_message_list.append(check_operation['errormessage'])
+
+    obj['result'] = result
+    obj['filter'] = filters
+    obj['num_pages'] = num_pages
+    obj['total_records'] = total_records
+    obj['message'] = message
+    obj['status'] = status
+    obj['error'] = error
+    obj['error_list'] = error_message_list
+    return HttpResponse(json.dumps(obj), content_type='application/json')
 
 
 

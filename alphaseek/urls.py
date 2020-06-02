@@ -21,6 +21,7 @@ from django.conf.urls import include, url
 urlpatterns = [
     path('admin/', admin.site.urls),
     url(r'crud_exchange/', views.crud_exchange, name='crud_exchange'),
-    url(r'crud_company/', views.crud_company, name='crud_company')
+    url(r'crud_company/', views.crud_company, name='crud_company'),
+    url(r'crud_company_nse_prices/', views.crud_company_nse_prices, name='crud_company_nse_prices')
 ]
 

@@ -111,7 +111,7 @@ class NseIndia:
 
     # Updating one NSE ticker price data
 
-    def update_historic_data(asset,date_check):
+    def update_historic_data(asset,date_check,period="max"):
         error = False
         success = False
         error_message_list = []
@@ -124,7 +124,7 @@ class NseIndia:
         if company.count() > 0:
             company = company[0]
             companyTotalData = yf.Ticker((asset.upper() + ".NS"))
-            period = "max"
+            period = period
             try:
                 if company.nse_price_update_db_date:
                     day_diff = (company.nse_price_update_db_date - date.today()).days
@@ -141,7 +141,7 @@ class NseIndia:
                     else:
                         period = "5d"                            
                 else:
-                    period = "max"                            
+                    period = period
                 # print(company.nse_price_update_db_date)
                 # print(period)
                 companyPriceData = companyTotalData.history(period=period)

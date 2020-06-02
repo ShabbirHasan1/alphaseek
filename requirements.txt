@@ -1,0 +1,7 @@
+django
+ipython
+psycopg2-binary==2.8.3
+django-crontab
+django-cors-headers
+nsetools
+yfinance

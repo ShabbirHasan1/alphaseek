@@ -62,7 +62,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 CRONJOBS = [
     ('2 0 * * *', 'datascrape.cron.daily_nse_pricing_scrape', '>> /home/ec2-user/projects/projectalpha/scheduled_job_daily.log'),
-    ('07 9 31 5 *', 'datascrape.cron.fresh_download_nse_pricing', '>> /home/ec2-user/projects/projectalpha/scheduled_job_fresh.log')
+    ('55 11 2 6 *', 'datascrape.cron.fresh_download_nse_pricing', '>> /home/ec2-user/projects/projectalpha/scheduled_job_fresh.log')
 ]
 
 CRONTAB_COMMAND_SUFFIX = '2>&1'

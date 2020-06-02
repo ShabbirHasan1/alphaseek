@@ -20,7 +20,7 @@ NseIndia.update_all_equity()
 
 # <<<< ------ Download all historic data ------>>>>
 TickerHistoricDay.objects.all().delete()
-NseIndia.update_all_historic_ticker()
+# NseIndia.update_all_historic_ticker()
 
 
 

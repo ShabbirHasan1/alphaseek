@@ -19,17 +19,17 @@ class Exchange(BaseModel):
         return json.dumps({'id':self.id,'exchange_code':self.exchange_code})
 
 class IndustrySector(BaseModel):
-    industry = models.CharField(max_length=200,db_index=True)
-    sector = models.CharField(max_length=200)
+    industry = models.CharField(max_length=300,db_index=True)
+    sector = models.CharField(max_length=300)
     details = models.CharField(max_length=500,null=True)
     def __str__(self):
         return json.dumps({'id':self.id,'industry_name':self.industry,'sector_name':self.sector})
 
 class Company(BaseModel):
-    name           = models.CharField(max_length=200,db_index=True)
-    isin_no        = models.CharField(max_length=30)
+    name           = models.CharField(max_length=300,db_index=True)
+    isin_no        = models.CharField(max_length=50)
     is_listed_nse  = models.BooleanField(default=False)
-    nse_ticker     = models.CharField(max_length=30,null=True)
+    nse_ticker     = models.CharField(max_length=50,null=True)
     industry_sector        = models.ForeignKey(IndustrySector,
                                         on_delete=models.SET_NULL,
                                         null = True)

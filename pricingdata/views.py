@@ -143,24 +143,6 @@ class NseIndia:
                 else:
                     period = period
             try:
-                if company.nse_price_update_db_date:
-                    day_diff = (company.nse_price_update_db_date - date.today()).days
-                    if day_diff >= 300:
-                        period = "max"
-                    elif day_diff >= 140 and day_diff < 300:
-                        period = "1y"
-                    elif day_diff >= 80 and day_diff < 140:
-                        period = "6mo"
-                    elif day_diff >= 28 and day_diff < 80:
-                        period = "3mo"
-                    elif day_diff >= 5 and day_diff < 28:
-                        period = "1mo"                            
-                    else:
-                        period = "5d"                            
-                else:
-                    period = period
-                # print(company.nse_price_update_db_date)
-                # print(period)
                 companyPriceData = companyTotalData.history(period=period)
                 index = companyPriceData.reset_index()['Date']
                 total_len = len(index)

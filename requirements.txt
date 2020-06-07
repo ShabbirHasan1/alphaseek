@@ -5,3 +5,4 @@ django-cors-headers
 nsetools
 yfinance
 django-crontab
+matplotlib

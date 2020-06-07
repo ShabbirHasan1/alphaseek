@@ -5,7 +5,7 @@ from dataclean.models import *
 import datetime as dt
 # Create your views here
 
-test_mode = True
+test_mode = False
 no_run = 3
 
 class ReturnCalculate:

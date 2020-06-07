@@ -172,7 +172,62 @@ class ReturnCalculate:
             error_message_list.append("Asset not found: " + asset)
         return {'output':output,'message':message,'error':error,'error_message_list':error_message_list,'success':success}
 
-            
+     
+    def calculate_all_returns(exchange='NSE',date_check=True):
+            error   = False
+            success = False
+            error_message_list = []
+            output = {}
+            output['monthly'] = []
+            output['daily'] = []
+            message = "Request Recieved"
+            if exchange =="NSE":
+                companies = Company.objects.filter(is_listed_nse=True)
+                total_companies = len(companies)
+                company_calculated = 0 
+                if test_mode:
+                    companies = [companies[0]]
+
+                for com in companies:
+                    # out1 = ReturnCalculate.daily_return(asset = com.nse_ticker,exchange="NSE")
+                    # if out1['error']:
+                    #     output['daily'].append(out1['output'])
+                    #     error_message_list.append(out1['error_message_list'])
+                    #     print(out1['message'])
+                    # else:
+                    #     output['daily'].append(out1['output'])
+                    #     error_message_list.append(out1['error_message_list'])
+                    #     company_calculated_d = company_calculated_d + 1
+                    #     com.nse_daily_return_update_date = date.today()
+                    #     com.save()
+                    #     print(out1['message'] + " | "+ str(company_calculated_d) + "/" + str(total_companies))
+
+                    # out2 = ReturnCalculate.monthly_return(asset = com.nse_ticker,exchange="NSE")
+                    # if out2['error']:
+                    #     output['monthly'].append(out2['output'])
+                    #     error_message_list.append(out2['error_message_list'])
+                    #     print(out2['message'])
+                    # else:
+                    #     output['monthly'].append(out2['output'])
+                    #     error_message_list.append(out2['error_message_list'])
+                    #     company_calculated_m = company_calculated_m + 1
+                    #     com.nse_monthly_return_update_date = date.today()
+                    #     com.save()
+                    out = ReturnCalculate.calculate_return(asset = com.nse_ticker,exchange="NSE",date_check=date_check) 
+                    output.append(out['output'])
+                    error_message_list.append(out['error_message_list']) 
+                    print(out['message'] + " | "+ str(company_calculated) + "/" + str(total_companies))
+                    
+                if len(error_message_list) == 0:                
+                    success = True
+                    error = False
+                    message = "Historical data scraped!"
+                else:
+                    success = False
+                    error = True
+                    message = "Found errors! Check the error list!"
+            return {'output':output,'message':message,'error':error,'error_message_list':error_message_list,'success':success}
+       
 
 
 
@@ -360,59 +415,4 @@ class ReturnCalculate:
     #             error_message_list.append("Invalid asset code")
         
     #     return {'output':output,'message':message,'error':error,'error_message_list':error_message_list,'success':success}
-
-    def calculate_all_returns(exchange='NSE',date_check=True):
-            error   = False
-            success = False
-            error_message_list = []
-            output = {}
-            output['monthly'] = []
-            output['daily'] = []
-            message = "Request Recieved"
-            if exchange =="NSE":
-                companies = Company.objects.filter(is_listed_nse=True)
-                total_companies = len(companies)
-                company_calculated = 0 
-                if test_mode:
-                    companies = [companies[0]]
-
-                for com in companies:
-                    # out1 = ReturnCalculate.daily_return(asset = com.nse_ticker,exchange="NSE")
-                    # if out1['error']:
-                    #     output['daily'].append(out1['output'])
-                    #     error_message_list.append(out1['error_message_list'])
-                    #     print(out1['message'])
-                    # else:
-                    #     output['daily'].append(out1['output'])
-                    #     error_message_list.append(out1['error_message_list'])
-                    #     company_calculated_d = company_calculated_d + 1
-                    #     com.nse_daily_return_update_date = date.today()
-                    #     com.save()
-                    #     print(out1['message'] + " | "+ str(company_calculated_d) + "/" + str(total_companies))
-
-                    # out2 = ReturnCalculate.monthly_return(asset = com.nse_ticker,exchange="NSE")
-                    # if out2['error']:
-                    #     output['monthly'].append(out2['output'])
-                    #     error_message_list.append(out2['error_message_list'])
-                    #     print(out2['message'])
-                    # else:
-                    #     output['monthly'].append(out2['output'])
-                    #     error_message_list.append(out2['error_message_list'])
-                    #     company_calculated_m = company_calculated_m + 1
-                    #     com.nse_monthly_return_update_date = date.today()
-                    #     com.save()
-                    out = ReturnCalculate.calculate_return(asset = com.nse_ticker,exchange="NSE",date_check=date_check) 
-                    output.append(out['output'])
-                    error_message_list.append(out['error_message_list']) 
-                    print(out['message'] + " | "+ str(company_calculated) + "/" + str(total_companies))
-                    
-                if len(error_message_list) == 0:                
-                    success = True
-                    error = False
-                    message = "Historical data scraped!"
-                else:
-                    success = False
-                    error = True
-                    message = "Found errors! Check the error list!"
-            return {'output':output,'message':message,'error':error,'error_message_list':error_message_list,'success':success}
 

@@ -222,7 +222,7 @@ class ReturnCalculate:
                     error_message_list.extend(out['error_message_list']) 
                     com.nse_return_update_date = date.today()
                     com.save()
-                    company_calculated_m = company_calculated_m + 1
+                    company_calculated = company_calculated + 1
                     # print(error_message_list)
                     print(out['message'] + " | "+ str(company_calculated) + "/" + str(total_companies))
                     

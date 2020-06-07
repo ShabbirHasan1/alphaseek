@@ -158,7 +158,7 @@ class ReturnCalculate:
                     messagemonthly = "Monthly Return calculation error " + asset
                     error_message_list.append('Monthly Return Calculation failure '+ asset)
 
-                message = messagedaily + messagemonthly
+                message = messagedaily + " | " + messagemonthly
 
             else:
                 error = True

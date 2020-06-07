@@ -1,5 +1,6 @@
 from django.db import models
 from pricingdata.models import BaseModel, Company, Exchange
+import json
 # Create your models here.
 
 class DailyReturn(BaseModel):

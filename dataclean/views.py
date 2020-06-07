@@ -225,7 +225,7 @@ class ReturnCalculate:
                 if len(error_message_list) == 0:                
                     success = True
                     error = False
-                    message = "Historical data scraped!"
+                    message = "Return Calculated!"
                 else:
                     success = False
                     error = True

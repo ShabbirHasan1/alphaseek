@@ -219,7 +219,7 @@ class ReturnCalculate:
                     #     com.save()
                     out = ReturnCalculate.calculate_return(company = com,exchange = exchange,date_check=date_check) 
                     output.append(out['output'])
-                    error_message_list.append(out['error_message_list']) 
+                    error_message_list.extend(out['error_message_list']) 
                     com.nse_return_update_date = date.today()
                     com.save()
                     print(error_message_list)

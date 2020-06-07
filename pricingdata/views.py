@@ -225,14 +225,14 @@ class NseIndia:
             out = NseIndia.update_historic_data(asset = com.nse_ticker,date_check=date_check)
             if out['error']:
                 output.append(out['output'])
-                error_message_list.append(out['error_message_list'])
+                error_message_list.extend(out['error_message_list'])
                 print(out['message'])
             else:
                 com.nse_tracker = True
                 com.nse_price_update_db_date = date.today()
                 com.save()
                 output.append(out['output'])
-                error_message_list.append(out['error_message_list'])
+                error_message_list.extend(out['error_message_list'])
                 company_scraped = company_scraped + 1
                 print(out['message'] + " | "+ str(company_scraped) + "/" + str(total_companies))
         if len(error_message_list) == 0:

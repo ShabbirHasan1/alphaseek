@@ -233,7 +233,7 @@ class ReturnCalculate:
                     success = False
                     error = True
                     message = "Found errors! Check the error list!"
-            return {'output':{},'message':message,'error':error,'error_message_list':error_message_list,'success':success}
+            return {'output':output,'message':message,'error':error,'error_message_list':error_message_list,'success':success}
 
             
 

@@ -62,9 +62,10 @@ ROOT_URLCONF = 'alphaseek.urls'
 CORS_ORIGIN_ALLOW_ALL = True
 
 CRONJOBS = [
-    ('20 0 * * *', 'pricingdata.cron.daily_nse_pricing_scrape', '>> /home/ec2-user/projects/projectalpha/scheduled_job_daily.log'),
-    ('25 12 2 6 *', 'pricingdata.cron.fresh_download_nse_pricing', '>> /home/ec2-user/projects/projectalpha/scheduled_job_fresh.log'),
-    ('00 12 * * 7', 'dataclean.cron.nse_return_calculate', '>> /home/ec2-user/projects/projectalpha/return_calculate_weekly.log')
+    # ('20 0 * * *', 'pricingdata.cron.daily_nse_pricing_scrape', '>> /home/ec2-user/projects/projectalpha/scheduled_job_daily.log'),
+    # ('25 12 2 6 *', 'pricingdata.cron.fresh_download_nse_pricing', '>> /home/ec2-user/projects/projectalpha/scheduled_job_fresh.log'),
+    # ('00 12 * * 7', 'dataclean.cron.nse_return_calculate', '>> /home/ec2-user/projects/projectalpha/return_calculate_weekly.log')
+    ('55 4 8 6 *', 'dataclean.cron.nse_return_calculate', '>> /home/ec2-user/projects/projectalpha/return_calculate_test.log')
 ]
 
 CRONTAB_COMMAND_SUFFIX = '2>&1'

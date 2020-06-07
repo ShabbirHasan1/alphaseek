@@ -439,6 +439,7 @@ def crud_company(request):
                     ,'industry_sector':trans.industry_sector
                     ,'nse_tracker':trans.nse_tracker
                     ,'nse_price_update_db_date':str(trans.nse_price_update_db_date)[:19]
+                    ,'nse_return_update_date':str(trans.nse_return_update_date)[:19]
                     ,'created_at':str(trans.created_at)[:19]
                     ,'modified_at':str(trans.modified_at)[:19]
                     # ,'min_nse_ticker_date':str(first_nse_ticker_date.strftime('%d-%b-%Y'))

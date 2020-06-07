@@ -48,9 +48,10 @@ class ReturnCalculate:
                 date_price = {
                             'Price': price_list
                             }
-                asset_df = pd.DataFrame(date_price, columns = ['Price'], index=pd.to_datetime(date_list))
+                
             
                 try:                    
+                    asset_df = pd.DataFrame(date_price, columns = ['Price'], index=pd.to_datetime(date_list))
                     asset_daily_return_1d  =  asset_df['Price'].pct_change(1)
                     asset_daily_return_2d  =  asset_df['Price'].pct_change(2)
                     asset_daily_return_3d  =  asset_df['Price'].pct_change(3)
@@ -95,9 +96,10 @@ class ReturnCalculate:
                     messagedaily = "Daily Return calculation error " + asset
                     error_message_list.append('Daily return calculation failure '+ asset)    
                 
-                asset_df_new = asset_df.resample('M').ffill()
+                
 
                 try:
+                    asset_df_new = asset_df.resample('M').ffill()
                     asset_monthly_return_1m   =  asset_df_new['Price'].pct_change(1)
                     asset_monthly_return_2m   =  asset_df_new['Price'].pct_change(2)
                     asset_monthly_return_3m   =  asset_df_new['Price'].pct_change(3)

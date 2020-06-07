@@ -21,7 +21,8 @@ class ReturnCalculate:
         messagedaily = "Daily Request Recieved"
         messagemonthly = "Monthly Request Recieved"
         date_today = date.today()
-
+        asset_df = None
+        asset_df_new = None
         if exchange == "NSE":
             asset = company.nse_ticker
         
@@ -43,7 +44,7 @@ class ReturnCalculate:
                 price_list = list(map(lambda x : float(x.price_close),assetdata))
 
                 exchange = assetdata[0].exchange
-                company = assetdata[0].company
+                
                 date_price = {
                             'Price': price_list
                             }

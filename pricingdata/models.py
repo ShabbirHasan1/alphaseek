@@ -35,6 +35,8 @@ class Company(BaseModel):
                                         null = True)
     nse_tracker    = models.BooleanField(default=False)
     nse_price_update_db_date = models.DateField(null=True)
+    nse_return_update_date = models.DateField(null=True)
+    # nse_monthly_return_update_date = models.DateField(null=True)
     def __str__(self):
         return json.dumps({'id':self.id,'company_name':self.name})
 

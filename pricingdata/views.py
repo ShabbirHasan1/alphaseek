@@ -168,6 +168,7 @@ class NseIndia:
                                 ,dividends   = companyPriceData['Dividends'][i]
                                 ,stock_split = companyPriceData['Stock Splits'][i]
                             )
+                            output = output.append(tick)
                     else:
                         tick = TickerHistoricDay.objects.create(
                                 company      = company
@@ -184,7 +185,7 @@ class NseIndia:
                         # new_path = os.path.join(path, 'filesdownloaded', exchange.exchange_code + "_" +asset.upper() + "_" + str(index[i])[:10] + ".tickerdata")
                         # with open(new_path , 'w') as fp: 
                         #     pass                        
-                output = TickerHistoricDay.objects.filter(company=company)
+                        output = output.append(tick)
                 error = False
                 success = True
                 message = "Historical Data Scraped! " + asset 

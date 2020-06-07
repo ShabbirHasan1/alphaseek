@@ -6,7 +6,7 @@ import datetime as dt
 from datetime import date, timedelta
 # Create your views here
 
-test_mode = True
+test_mode = False
 no_run = 3
 
 class ReturnCalculate:
@@ -222,7 +222,8 @@ class ReturnCalculate:
                     error_message_list.extend(out['error_message_list']) 
                     com.nse_return_update_date = date.today()
                     com.save()
-                    print(error_message_list)
+                    company_calculated_m = company_calculated_m + 1
+                    # print(error_message_list)
                     print(out['message'] + " | "+ str(company_calculated) + "/" + str(total_companies))
                     
                 if len(error_message_list) == 0:                

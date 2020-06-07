@@ -10,7 +10,7 @@ test_mode = True
 no_run = 3
 
 class ReturnCalculate:
-    def calculate_return(company,date_check=True):
+    def calculate_return(company,exchange,date_check=True):
         error = False
         success = False
         error_message_list = []
@@ -21,20 +21,22 @@ class ReturnCalculate:
         messagedaily = "Daily Request Recieved"
         messagemonthly = "Monthly Request Recieved"
         date_today = date.today()
-        # if exchange == "NSE":
-        #     company = Company.objects.filter(company__nse_ticker=asset)
+
+        if exchange == "NSE":
+            asset = company.nse_ticker
         
 
 
         if company:
             # company = company[0]
-            last_db_update_date = company.nse_daily_return_update_date
+            last_db_update_date = company.nse_return_update_date
+        
             
             if last_db_update_date != None:
                 fromdate = last_db_update_date - timedelta(days=600)
-                assetdata = TickerHistoricDay.objects.filter(company__nse_ticker=asset,date__range=[str(fromdate), str(date_today)]).order_by('date')
+                assetdata = TickerHistoricDay.objects.filter(company=company,date__range=[str(fromdate), str(date_today)]).order_by('date')
             else:
-                assetdata = TickerHistoricDay.objects.filter(company__nse_ticker=asset).order_by('date')
+                assetdata = TickerHistoricDay.objects.filter(company=company).order_by('date')
             
             if assetdata.count() > 0:
                 date_list  = list(map(lambda x : str(x.date),assetdata))
@@ -176,16 +178,19 @@ class ReturnCalculate:
             error   = False
             success = False
             error_message_list = []
-            output = {}
-            output['monthly'] = []
-            output['daily'] = []
+            output = []
+            # output['monthly'] = []
+            # output['daily'] = []
             message = "Request Recieved"
             if exchange =="NSE":
-                companies = Company.objects.filter(is_listed_nse=True)
+                if test_mode:
+                    companies = Company.objects.filter(is_listed_nse=True,nse_ticker="20MICRONS")
+                else:
+                    companies = Company.objects.filter(is_listed_nse=True)
+                
                 total_companies = len(companies)
                 company_calculated = 0 
-                if test_mode:
-                    companies = [companies[0]]
+                
 
                 for com in companies:
                     # out1 = ReturnCalculate.daily_return(asset = com.nse_ticker,exchange="NSE")
@@ -212,7 +217,7 @@ class ReturnCalculate:
                     #     company_calculated_m = company_calculated_m + 1
                     #     com.nse_monthly_return_update_date = date.today()
                     #     com.save()
-                    out = ReturnCalculate.calculate_return(com,date_check=date_check) 
+                    out = ReturnCalculate.calculate_return(company = com,exchange = exchange,date_check=date_check) 
                     output.append(out['output'])
                     error_message_list.append(out['error_message_list']) 
                     print(out['message'] + " | "+ str(company_calculated) + "/" + str(total_companies))

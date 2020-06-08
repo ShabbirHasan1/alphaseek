@@ -37,3 +37,6 @@ class StrategyPrices(BaseModel):
     price           = models.FloatField()
     high_water_mark = models.FloatField()
     drawdown        = models.FloatField()
+    def __str__(self):
+        return json.dumps({'id':self.id,'ticker_name':self.strategy.name})
+

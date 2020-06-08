@@ -6,7 +6,7 @@ import datetime as dt
 from datetime import date, timedelta
 # Create your views here
 
-test_mode = False
+test_mode = True
 no_run = 3
 
 class ReturnCalculate:
@@ -41,7 +41,7 @@ class ReturnCalculate:
             
             if assetdata.count() > 0:
                 date_list  = list(map(lambda x : str(x.date),assetdata))
-                price_list = list(map(lambda x : float(x.price_close),assetdata))
+                price_list = list(map(lambda x : float(x.price_close_adjusted),assetdata))
 
                 exchange = assetdata[0].exchange
                 
@@ -84,7 +84,7 @@ class ReturnCalculate:
                             ,return_21d   = asset_daily_return_21d[i] if str(asset_daily_return_21d[i]) != 'nan'  else None   
                             ,return_25d   = asset_daily_return_25d[i] if str(asset_daily_return_25d[i]) != 'nan'  else None   
                                 )  
-                            output['daily_return'].append(assetdreturn)
+                            # output['daily_return'].append(assetdreturn)
                     # output['daily_return'] = DailyReturn.objects.filter(company = company)
                     error = False
                     success = True
@@ -150,7 +150,7 @@ class ReturnCalculate:
                                 ,return_17m   = asset_monthly_return_17m[i] if str(asset_monthly_return_17m[i]) != 'nan'  else None   
                                 ,return_18m   = asset_monthly_return_18m[i] if str(asset_monthly_return_18m[i]) != 'nan'  else None   
                                 )  
-                            output['monthly_return'].append(assetmreturn)
+                            # output['monthly_return'].append(assetmreturn)
                         # output['monthly_return'] = MonthlyReturn.objects.filter(company = company)
                         error = False
                         success = True
@@ -187,7 +187,7 @@ class ReturnCalculate:
             message = "Request Recieved"
             if exchange =="NSE":
                 if test_mode:
-                    companies = Company.objects.filter(is_listed_nse=True,nse_ticker="20MICRONS")
+                    companies = Company.objects.filter(is_listed_nse=True,nse_tracker=True).order_by('name')
                 else:
                     companies = Company.objects.filter(is_listed_nse=True)
                 

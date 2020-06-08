@@ -8,15 +8,12 @@ import re
 # from lxml.html import document_fromstring
 from datetime import date, timedelta
 from pathlib import Path
-
-path = os.path.dirname(os.path.realpath(__file__))
-
-
 from nsetools import Nse
 import yfinance as yf
 from datascrape.models import *
 
-test_mode = False
+path = os.path.dirname(os.path.realpath(__file__))
+test_mode = True
 no_run = 3
 
 
@@ -111,7 +108,7 @@ class NSEIndia:
 
     # Updating one NSE ticker price data
 
-    def update_historic_data(asset,date_check,period="max",force_period=False):
+    def update_historic_data(asset,date_check):
         error = False
         success = False
         error_message_list = []
@@ -121,30 +118,24 @@ class NSEIndia:
         company = Company.objects.filter(nse_ticker=asset.upper())
         exchange = Exchange.objects.filter(exchange_code="NSE")[0]
         yesterday = date.today() -  timedelta(days=1)
+        period_run = True
         if company.count() > 0:
             company = company[0]
             companyTotalData = yf.Ticker((asset.upper() + ".NS"))
-            period = period
-            if not force_period:
-                if company.nse_price_update_db_date:
-                    day_diff = (company.nse_price_update_db_date - date.today()).days
-                    if day_diff >= 300:
-                        period = "max"
-                    elif day_diff >= 140 and day_diff < 300:
-                        period = "1y"
-                    elif day_diff >= 80 and day_diff < 140:
-                        period = "6mo"
-                    elif day_diff >= 28 and day_diff < 80:
-                        period = "3mo"
-                    elif day_diff >= 5 and day_diff < 28:
-                        period = "1mo"                            
-                    else:
-                        period = "5d"                            
-                else:
-                    period = period
-                    
+            period = "max"
+            
+            if company.nse_price_update_db_date:
+                day_diff = (date.today() - company.nse_price_update_db_date).days + 4
+                start_date = str(date.today() -  timedelta(days=day_diff))
+                end_date = str(date.today())
+                period_run = False                    
             try:
-                companyPriceData = companyTotalData.history(period=period)
+                if period_run:
+                    companyPriceData = yf.download((asset.upper() + ".NS"),period=period)
+                else:
+                    companyPriceData = yf.download((asset.upper() + ".NS"),start=start_date,end=end_date)
+                companyDividendData = companyTotalData.get_dividends()
+                companyStockSplitData = companyTotalData.get_splits()
                 index = companyPriceData.reset_index()['Date']
                 total_len = len(index)
                 for i in range(total_len):
@@ -161,11 +152,10 @@ class NSEIndia:
                                 ,price_low   = companyPriceData['Low'][i]
                                 ,price_close = companyPriceData['Close'][i]
                                 ,price_open  = companyPriceData['Open'][i]
+                                ,price_close_adjusted = companyPriceData['Adj Close'][i]
                                 ,volume      = companyPriceData['Volume'][i]
-                                ,dividends   = companyPriceData['Dividends'][i]
-                                ,stock_split = companyPriceData['Stock Splits'][i]
                             )
-                            output = output.append(tick)
+                            # output = output.append(tick)
                     else:
                         tick = TickerHistoricDay.objects.create(
                                 company      = company
@@ -175,18 +165,58 @@ class NSEIndia:
                                 ,price_low   = companyPriceData['Low'][i]
                                 ,price_close = companyPriceData['Close'][i]
                                 ,price_open  = companyPriceData['Open'][i]
+                                ,price_close_adjusted = companyPriceData['Adj Close'][i]
                                 ,volume      = companyPriceData['Volume'][i]
-                                ,dividends   = companyPriceData['Dividends'][i]
-                                ,stock_split = companyPriceData['Stock Splits'][i]
                             )
-                        # new_path = os.path.join(path, 'filesdownloaded', exchange.exchange_code + "_" +asset.upper() + "_" + str(index[i])[:10] + ".tickerdata")
-                        # with open(new_path , 'w') as fp: 
-                        #     pass                        
-                        output = output.append(tick)
+                        # print(tick)
+                        # output = output.append(tick)
+                
+                index1 = companyDividendData.reset_index()['Date']
+                total_div = len(index1)
+                
+                for j in range(total_div):
+                    if company.nse_price_update_db_date:
+                        if (company.nse_price_update_db_date -  timedelta(days=2)) > index1[j]:
+                            pass
+                        else:
+                            # print('1d')
+                            # print(companyDividendData[j])
+
+                            d_price_update = TickerHistoricDay.objects.filter(company=company,exchange=exchange,date=index1[j])[0]
+                            d_price_update.dividends = companyDividendData[j]
+                            d_price_update.save()
+                    else:
+                        # print('2d')
+                        # print(companyDividendData[j])
+                        d_price_update = TickerHistoricDay.objects.filter(company=company,exchange=exchange,date=index1[j])[0]
+                        d_price_update.dividends = companyDividendData[j]
+                        d_price_update.save()
+
+                    
+                index2 = companyStockSplitData.reset_index()['Date']
+                total_split = len(index2)
+                
+                for k in range(total_split):
+                    if company.nse_price_update_db_date:
+                        if (company.nse_price_update_db_date -  timedelta(days=2)) > index2[k]:
+                            pass
+                        else:
+                            # print('1')
+                            # print(companyStockSplitData[k])
+                            s_price_update = TickerHistoricDay.objects.filter(company=company,exchange=exchange,date=index2[k])[0]
+                            s_price_update.stock_split = companyStockSplitData[k]
+                            s_price_update.save()
+                    else:
+                        # print('2')
+                        # print(companyStockSplitData[k])
+                        s_price_update = TickerHistoricDay.objects.filter(company=company,exchange=exchange,date=index2[k])[0]
+                        s_price_update.stock_split = companyStockSplitData[k]
+                        s_price_update.save()
+                    
                 error = False
                 success = True
                 message = "Historical Data Scraped! " + asset 
-                
+                    
             except:
                 output = []
                 error = True
@@ -202,33 +232,29 @@ class NSEIndia:
 
     # updating all ticker price data
 
-    def update_all_historic_ticker(partial=False,date_check=False):
+    def update_all_historic_ticker(date_check=False):
         error   = False
         success = False
         error_message_list = []
         output = []
         message = "Request Recieved"
-        if partial:
-            companies = Company.objects.filter(is_listed_nse=True,nse_tracker=True)
-        else:
-            companies = Company.objects.filter(is_listed_nse=True)
+        companies = Company.objects.filter(is_listed_nse=True).order_by('name')
         total_companies = len(companies)
         company_scraped = 0 
         if test_mode:
-            companies = [companies[0]]
-
-
+            companies = [companies[0],companies[1],companies[2]]
+            # companies = [companies[0]]
         for com in companies:
             out = NSEIndia.update_historic_data(asset = com.nse_ticker,date_check=date_check)
             if out['error']:
-                output.append(out['output'])
+                output.extend(out['output'])
                 error_message_list.extend(out['error_message_list'])
                 print(out['message'])
             else:
                 com.nse_tracker = True
                 com.nse_price_update_db_date = date.today()
                 com.save()
-                output.append(out['output'])
+                output.extend(out['output'])
                 error_message_list.extend(out['error_message_list'])
                 company_scraped = company_scraped + 1
                 print(out['message'] + " | "+ str(company_scraped) + "/" + str(total_companies))

@@ -55,7 +55,7 @@ class TickerHistoricDay(BaseModel):
     price_open  = models.FloatField(null=True)
     price_close_adjusted = models.FloatField(null=True)
     volume      = models.FloatField(null=True)
-    dividends   = models.FloatField(null=True)
-    stock_split = models.FloatField(null=True)
+    dividends   = models.FloatField(null=True,default=0)
+    stock_split = models.FloatField(null=True,default=0)
     def __str__(self):
-        return json.dumps({'id':self.id,'ticker_name':self.company.name})
+        return json.dumps({'id':self.id,'ticker_name':self.company.name,'date':str(self.date)})

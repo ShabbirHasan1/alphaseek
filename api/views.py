@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect,HttpResponseForbidden,HttpResponse
 from django.core.paginator import Paginator
 from django.core import serializers
-from pricingdata.models import *
+from datascrape.models import *
 from django.db.models import Q, Max, Min
 from overall.views import get_param,cleanstring,booleanvar_check, listvar_check, intvar_check, floatvar_check
 import json

@@ -1,7 +1,7 @@
 
 .DS_Store
-dataclean/migrations/*.py
-pricingdata/migrations/*.py
+dataprep/migrations/*.py
+datascrape/migrations/*.py
 api/migrations/*.py
 overall/migrations/*.py
 # Byte-compiled / optimized / DLL files

@@ -1,7 +1,7 @@
 from django.shortcuts import render
-from pricingdata.models import *
+from datascrape.models import *
 import pandas as pd
-from dataclean.models import *
+from dataprep.models import *
 import datetime as dt
 from datetime import date, timedelta
 # Create your views here

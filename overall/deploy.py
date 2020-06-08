@@ -1,6 +1,6 @@
-from pricingdata.views import *
-from pricingdata.models import *
-from dataclean.models import *
+from datascrape.views import *
+from datascrape.models import *
+from dataprep.models import *
 
 # TickerHistoricDay.objects.all().delete()
 # Company.objects.all().delete()

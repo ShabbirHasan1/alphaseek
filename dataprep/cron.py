@@ -1,4 +1,4 @@
-from dataclean import views as clean_data
+from dataprep import views as clean_data
 from datetime import datetime
 
 def nse_return_calculate():

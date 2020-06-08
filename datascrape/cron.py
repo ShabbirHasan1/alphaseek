@@ -1,4 +1,4 @@
-from pricingdata import views as data_code
+from datascrape import views as data_code
 from datetime import datetime
 
 def daily_nse_pricing_scrape():

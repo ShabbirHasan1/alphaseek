@@ -37,12 +37,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'pricingdata',
+    'datascrape',
     'api',
     'overall',
     'django_crontab',
     'corsheaders',
-    'dataclean'
+    'dataprep'
 ]
 
 MIDDLEWARE = [
@@ -62,10 +62,10 @@ ROOT_URLCONF = 'alphaseek.urls'
 CORS_ORIGIN_ALLOW_ALL = True
 
 CRONJOBS = [
-    # ('20 0 * * *', 'pricingdata.cron.daily_nse_pricing_scrape', '>> /home/ec2-user/projects/projectalpha/scheduled_job_daily.log'),
-    # ('25 12 2 6 *', 'pricingdata.cron.fresh_download_nse_pricing', '>> /home/ec2-user/projects/projectalpha/scheduled_job_fresh.log'),
-    # ('00 12 * * 7', 'dataclean.cron.nse_return_calculate', '>> /home/ec2-user/projects/projectalpha/return_calculate_weekly.log')
-    ('18 5 8 6 *', 'dataclean.cron.nse_return_calculate', '>> /home/ec2-user/projects/projectalpha/return_calculate_test.log')
+    # ('20 0 * * *', 'datascrape.cron.daily_nse_pricing_scrape', '>> /home/ec2-user/projects/projectalpha/scheduled_job_daily.log'),
+    # ('25 12 2 6 *', 'datascrape.cron.fresh_download_nse_pricing', '>> /home/ec2-user/projects/projectalpha/scheduled_job_fresh.log'),
+    # ('00 12 * * 7', 'dataprep.cron.nse_return_calculate', '>> /home/ec2-user/projects/projectalpha/return_calculate_weekly.log')
+    ('18 5 8 6 *', 'dataprep.cron.nse_return_calculate', '>> /home/ec2-user/projects/projectalpha/return_calculate_test.log')
 ]
 
 CRONTAB_COMMAND_SUFFIX = '2>&1'

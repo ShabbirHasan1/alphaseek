@@ -56,7 +56,7 @@ class ExchangeClass():
 
 # NSE Data Update from NSE website
 
-class NseIndia:
+class NSEIndia:
     # getting all equities from NSE
     def update_all_equity():
         error = False
@@ -64,7 +64,7 @@ class NseIndia:
         error_message_list = []
         output = {}
         message = "Request Recieved"
-        stocks_csv_url = 'http://www1.nseindia.com/content/equities/EQUITY_L.csv'
+        stocks_csv_url = 'http://www1.NSEIndia.com/content/equities/EQUITY_L.csv'
 
         with requests.Session() as s:
             try:
@@ -142,6 +142,7 @@ class NseIndia:
                         period = "5d"                            
                 else:
                     period = period
+                    
             try:
                 companyPriceData = companyTotalData.history(period=period)
                 index = companyPriceData.reset_index()['Date']
@@ -149,12 +150,8 @@ class NseIndia:
                 for i in range(total_len):
                     if date_check:
                         if TickerHistoricDay.objects.filter(company = company,exchange=exchange,date = index[i]).count() > 0 or index[i] > yesterday:
-                            pass
                             print(asset + " passed " + str(index[i]))    
-
-                        # new_path_2 = os.path.join(path, 'filesdownloaded', exchange.exchange_code + "_" +asset.upper() + "_" + str(index[i])[:10] + ".tickerdata")
-                        # if Path(new_path_2).is_file():
-                            # pass
+                            pass
                         else:
                             tick = TickerHistoricDay.objects.create(
                                 company      = company
@@ -199,8 +196,8 @@ class NseIndia:
         else:
             error = True
             success = False
-            message = "Please check asset code"
-            error_message_list.append("Invalid asset code")
+            message = "Company not found for the asset " + asset.upper()
+            error_message_list.append("Company not found for the asset " + asset.upper())
         return {'output':output,'message':message,'error':error,'error_message_list':error_message_list,'success':success}
 
     # updating all ticker price data
@@ -222,7 +219,7 @@ class NseIndia:
 
 
         for com in companies:
-            out = NseIndia.update_historic_data(asset = com.nse_ticker,date_check=date_check)
+            out = NSEIndia.update_historic_data(asset = com.nse_ticker,date_check=date_check)
             if out['error']:
                 output.append(out['output'])
                 error_message_list.extend(out['error_message_list'])

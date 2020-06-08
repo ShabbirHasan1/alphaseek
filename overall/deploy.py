@@ -20,11 +20,11 @@ MonthlyReturn.objects.all().delete()
 # )
 
 # <<<< ------ Download all NSE tickers ------>>>>
-# NseIndia.update_all_equity()
+# NSEIndia.update_all_equity()
 
 
 # <<<< ------ Download all historic data ------>>>>
-# NseIndia.update_all_historic_ticker()
+# NSEIndia.update_all_historic_ticker()
 
 
 

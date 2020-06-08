@@ -58,7 +58,7 @@
     #         else:
     #             if i != 0:
     #                 print (asset.nse_ticker)
-    #                 NseIndia.create_update_ticker(asset=asset.nse_ticker)
+    #                 NSEIndia.create_update_ticker(asset=asset.nse_ticker)
     #                 i = i + 1 
     #             else:
     #                 i = i + 1 

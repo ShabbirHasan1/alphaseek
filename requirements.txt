@@ -6,3 +6,4 @@ nsetools
 yfinance
 django-crontab
 matplotlib
+lxml

@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'overall',
     'django_crontab',
     'corsheaders',
-    'dataprep'
+    'dataprep',
+    'strategytest'
 ]
 
 MIDDLEWARE = [

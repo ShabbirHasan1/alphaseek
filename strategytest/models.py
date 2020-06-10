@@ -10,13 +10,13 @@ class StrategyDetails(BaseModel):
     sharpe_ratio = models.FloatField(null=True) 
     return_strategy = models.FloatField(null=True) 
     volatility_strategy = models.FloatField(null=True) 
-    histric_start_period = models.DateField()
-    historic_end_period = models.DateField()
+    histric_start_period = models.DateField(null=True)
+    historic_end_period = models.DateField(null=True)
     def __str__(self):
         return json.dumps({'id':self.id,'ticker_name':self.strategy.name})
 
 class StrategyPortfolio(BaseModel):
-    strategy   = models.ForeignKey(Company,
+    strategy   = models.ForeignKey(StrategyDetails,
                                     on_delete=models.CASCADE,
                                     null = True,db_index=True)
     company      = models.ForeignKey(Company,
@@ -30,11 +30,11 @@ class StrategyPortfolio(BaseModel):
     def __str__(self):
         return json.dumps({'id':self.id,'ticker_name':self.strategy.name})
 
-class StrategyPrices(BaseModel):
+class StrategyReturns(BaseModel):
     strategy        = models.ForeignKey(Company,
                                 on_delete=models.CASCADE,
                                 null = True,db_index=True)
-    price           = models.FloatField()
+    return_stock    = models.FloatField()
     high_water_mark = models.FloatField()
     drawdown        = models.FloatField()
     def __str__(self):

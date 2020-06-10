@@ -19,9 +19,7 @@ no_run = 3
 
 class ExchangeClass():
     # Creates exchange in the database
-    def create_exchange(exchange_name,exchange_code,exchange_country,exchange_timezone,exchange_timezone_short,
-    timezone_gmt_off_milliseconds
-    ):
+    def create_exchange(exchange_name,exchange_code,exchange_country,exchange_timezone,exchange_timezone_short,timezone_gmt_off_milliseconds):
         error = False
         success = False
         error_message_list = []

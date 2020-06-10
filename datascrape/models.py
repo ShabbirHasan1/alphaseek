@@ -41,6 +41,7 @@ class Company(BaseModel):
     def __str__(self):
         return json.dumps({'id':self.id,'company_name':self.name})
 
+
 class TickerHistoricDay(BaseModel):
     company     = models.ForeignKey(Company,
                                     on_delete=models.CASCADE,

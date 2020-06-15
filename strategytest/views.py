@@ -8,7 +8,7 @@ from datetime import date, timedelta
 import math
 # Create your views here.
 
-# git hub private repo correction
+
 
 risk_free_rate = 0.044
 

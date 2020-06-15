@@ -7,3 +7,5 @@ yfinance
 django-crontab
 matplotlib
 lxml
+sklearn
+regressors

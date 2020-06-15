@@ -71,7 +71,7 @@ class IndexDailyReturn(BaseModel):
     return_21d   = models.FloatField(null=True)
     return_25d   = models.FloatField(null=True)    
     def __str__(self):
-        return json.dumps({'id':self.id,'ticker_name':self.company.name})
+        return json.dumps({'id':self.id,'ticker_name':self.index.name})
 
 class IndexMonthlyReturn(BaseModel):
     index     = models.ForeignKey(Index,
@@ -99,3 +99,5 @@ class IndexMonthlyReturn(BaseModel):
     return_16m   = models.FloatField(null=True)    
     return_17m   = models.FloatField(null=True)    
     return_18m   = models.FloatField(null=True)    
+    def __str__(self):
+        return json.dumps({'id':self.id,'ticker_name':self.index.name})

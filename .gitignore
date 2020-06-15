@@ -4,6 +4,8 @@ dataprep/migrations/*.py
 datascrape/migrations/*.py
 api/migrations/*.py
 overall/migrations/*.py
+strategytest/migrations/*.py
+strategyout/migrations/*.py
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

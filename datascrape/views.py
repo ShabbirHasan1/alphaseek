@@ -16,10 +16,14 @@ path = os.path.dirname(os.path.realpath(__file__))
 test_mode = True
 no_run = 3
 
+index_list = [
+    'BSESN',
+    'NSEI'
+]
 
 class ExchangeClass():
     # Creates exchange in the database
-    def create_exchange(exchange_name,exchange_code,exchange_country,exchange_timezone,exchange_timezone_short,timezone_gmt_off_milliseconds):
+    def create_exchange(exchange_name,exchange_code,exchange_country,exchange_timezone,exchange_timezone_short,timezone_gmt_off_milliseconds,exchange_currency):
         error = False
         success = False
         error_message_list = []
@@ -40,6 +44,7 @@ class ExchangeClass():
                 ,exchange_timezone = exchange_timezone
                 ,exchange_timezone_short = exchange_timezone_short
                 ,timezone_gmt_off_milliseconds = timezone_gmt_off_milliseconds
+                ,exchange_currency = exchange_currency
             )
             output = [exchange_new]
             success = True
@@ -50,6 +55,163 @@ class ExchangeClass():
 
 
 # NSE Data Update from NSE website
+
+class IndexClass():
+    def create_index(name,ticker,exchange_code):
+        error = False
+        success = False
+        error_message_list = []
+        output = Index.objects.none()
+        message = "Request Recieved"
+        if exchange_code:
+            exchange = Exchange.objects.filter(exchange_code=exchange_code)
+            if exchange:
+                exchange = exchange[0]
+            else:
+                error = True
+                success = False
+                message = "Incorrect exchange code "
+
+        else:
+            error = True
+            success = False
+            message = "No exchange code mentioned"
+
+        if not error:
+            index = Index.objects.filter(name=name.lower())
+            if index.count() > 0 :
+                message = "Index Already Exists!"        
+                output = index
+                success = False
+                error = False
+            else:
+                index_new = Index.objects.create(
+                    name = name
+                    ,ticker = ticker
+                    ,exchange = exchange
+                )
+                output = [index_new]
+                success = True
+                message = "Exchange Created!"
+                error = False
+
+        return {'output':output,'message':message,'error':error,'error_message_list':error_message_list,'success':success}
+
+    def download_historic_index(index_code,date_check):
+        error = False
+        success = False
+        error_message_list = []
+        output = []
+        message = "Request Recieved"
+        
+        indexasset = Index.objects.filter(ticker=index_code.upper())
+        # exchange = Exchange.objects.filter(exchange_code=exchange_code)[0]
+        yesterday = date.today() -  timedelta(days=1)
+        period_run = True
+    
+        if indexasset.count() > 0:
+            indexasset = indexasset[0]
+            indexTotalData = yf.Ticker(("^" + index_code.upper()))
+            period = "max"
+            
+            if indexasset.price_update_date:
+                day_diff = (date.today() - indexasset.price_update_date).days + 4
+                start_date = str(date.today() -  timedelta(days=day_diff))
+                end_date = str(date.today())
+                period_run = False                    
+            try:
+                print(("^" + index_code.upper()))
+                if period_run:
+                    indexPriceData = yf.download(("^" + index_code.upper()),period=period)
+                else:
+                    indexPriceData = yf.download(("^" + index_code.upper()),start=start_date,end=end_date)
+                print('here')
+                index = indexPriceData.reset_index()['Date']
+                total_len = len(index)
+                for i in range(total_len):
+                    if date_check:
+                        if IndexHistoricDay.objects.filter(index = indexasset, date = index[i]).count() > 0 or index[i] > yesterday:
+                            print(index_code + " passed " + str(index[i]))    
+                        else:
+                            tick = IndexHistoricDay.objects.create(
+                                index      = indexasset
+                                ,exchange    = indexasset.exchange
+                                ,date        = index[i]
+                                ,price_high  = indexPriceData['High'][i]
+                                ,price_low   = indexPriceData['Low'][i]
+                                ,price_close = indexPriceData['Close'][i]
+                                ,price_open  = indexPriceData['Open'][i]
+                                ,price_close_adjusted = indexPriceData['Adj Close'][i]
+                                ,volume      = indexPriceData['Volume'][i]
+                            )
+                            # output = output.append(tick)
+                    else:
+                        tick = IndexHistoricDay.objects.create(
+                                index      = indexasset
+                                ,exchange    = indexasset.exchange
+                                ,date        = index[i]
+                                ,price_high  = indexPriceData['High'][i]
+                                ,price_low   = indexPriceData['Low'][i]
+                                ,price_close = indexPriceData['Close'][i]
+                                ,price_open  = indexPriceData['Open'][i]
+                                ,price_close_adjusted = indexPriceData['Adj Close'][i]
+                                ,volume      = indexPriceData['Volume'][i]          
+                                )
+                        # print(tick)
+                        # output = output.append(tick)
+                
+                error = False
+                success = True
+                message = "Historical Data Scraped! " + index_code.upper() 
+                indexasset.price_update_date = date.today()
+                indexasset.save()
+
+            except:
+                output = []
+                error = True
+                success = False
+                message = "Data Download error " + index_code.upper() 
+                error_message_list.append('Download failure '+ index_code.upper() )
+        else:
+            error = True
+            success = False
+            message = "Company not found for the asset " + index_code.upper() 
+            error_message_list.append("Company not found for the asset " + index_code.upper())
+        return {'output':output,'message':message,'error':error,'error_message_list':error_message_list,'success':success}
+
+    def update_all_historic_index(date_check=False):
+        error   = False
+        success = False
+        error_message_list = []
+        output = []
+        message = "Request Recieved"
+        indexes = Index.objects.all().order_by('name')
+        total_index = len(indexes)
+        index_scraped = 0 
+        if test_mode:
+            indexes = [indexes[0],indexes[1]]
+            # companies = [companies[0]]
+        for ind in indexes:
+            out = IndexClass.download_historic_index(index_code = ind.ticker,date_check=date_check)
+            if out['error']:
+                output.extend(out['output'])
+                error_message_list.extend(out['error_message_list'])
+                print(out['message'])
+            else:
+                output.extend(out['output'])
+                error_message_list.extend(out['error_message_list'])
+                index_scraped = index_scraped + 1
+                print(out['message'] + " | "+ str(index_scraped) + "/" + str(total_index))
+        if len(error_message_list) == 0:
+            success = True
+            error = False
+            message = "Historical data scraped!"
+        else:
+            success = False
+            error = True
+            message = "Found errors! Check the error list!"
+        return {'output':output,'message':message,'error':error,'error_message_list':error_message_list,'success':success}
+
 
 class NSEIndia:
     # getting all equities from NSE
@@ -214,7 +376,9 @@ class NSEIndia:
                 error = False
                 success = True
                 message = "Historical Data Scraped! " + asset 
-                    
+                company.nse_tracker = True
+                company.nse_price_update_db_date = date.today()
+                company.save()
             except:
                 output = []
                 error = True
@@ -249,9 +413,6 @@ class NSEIndia:
                 error_message_list.extend(out['error_message_list'])
                 print(out['message'])
             else:
-                com.nse_tracker = True
-                com.nse_price_update_db_date = date.today()
-                com.save()
                 output.extend(out['output'])
                 error_message_list.extend(out['error_message_list'])
                 company_scraped = company_scraped + 1

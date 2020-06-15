@@ -15,7 +15,7 @@ class StrategyDetails(BaseModel):
     historic_start_date = models.DateField(null=True)
     historic_end_date = models.DateField(null=True)
     def __str__(self):
-        return json.dumps({'id':self.id,'ticker_name':self.strategy.name})
+        return json.dumps({'id':self.id,'strategy_name':self.name})
 
 class StrategyPortfolio(BaseModel):
     strategy   = models.ForeignKey(StrategyDetails,
@@ -30,16 +30,17 @@ class StrategyPortfolio(BaseModel):
     date         = models.DateField()
     weight       = models.FloatField(null=True)
     def __str__(self):
-        return json.dumps({'id':self.id,'ticker_name':self.strategy.name})
+        return json.dumps({'id':self.id,'strategy_name':self.strategy.name})
 
 class StrategyReturns(BaseModel):
-    strategy        = models.ForeignKey(Company,
+    strategy            = models.ForeignKey(StrategyDetails,
                                 on_delete=models.CASCADE,
                                 null = True,db_index=True)
-    date            = models.DateField()
-    return_stock    = models.FloatField()
-    high_water_mark = models.FloatField()
-    drawdown        = models.FloatField()
+    date                = models.DateField()
+    return_strategy     = models.FloatField()
+    high_water_mark     = models.FloatField(null=True,default=1.0)
+    drawdown            = models.FloatField(null=True,default=0.0)
+    cumulative_return   = models.FloatField(null=True,default=0.0)
     def __str__(self):
-        return json.dumps({'id':self.id,'ticker_name':self.strategy.name})
+        return json.dumps({'id':self.id,'strategy_name':self.strategy.name})
 

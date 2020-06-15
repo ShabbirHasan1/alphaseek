@@ -14,6 +14,7 @@ class Exchange(BaseModel):
     exchange_country = models.CharField(max_length=50)
     exchange_timezone = models.CharField(max_length=50)
     exchange_timezone_short = models.CharField(max_length=50)
+    exchange_currency       = models.CharField(max_length=20)
     timezone_gmt_off_milliseconds = models.IntegerField(default=0)
     def __str__(self):
         return json.dumps({'id':self.id,'exchange_code':self.exchange_code})
@@ -40,6 +41,33 @@ class Company(BaseModel):
     sentiment_update_date = models.DateField(null=True)
     def __str__(self):
         return json.dumps({'id':self.id,'company_name':self.name})
+
+
+class Index(BaseModel):
+    name        = models.CharField(max_length=300,db_index=True)
+    ticker      = models.CharField(max_length=50,null=True)
+    exchange    = models.ForeignKey(Exchange,
+                                    on_delete=models.CASCADE,
+                                    null = True,db_index=True)
+    price_update_date = models.DateField(null=True)
+    return_update_date = models.DateField(null=True)
+    
+
+class IndexHistoricDay(BaseModel):
+    index     = models.ForeignKey(Index,
+                                    on_delete=models.CASCADE,
+                                    null = True,db_index=True)
+    exchange    = models.ForeignKey(Exchange,
+                                    on_delete=models.CASCADE,
+                                    null = True,db_index=True)
+    date        = models.DateField(db_index=True)
+    price_high  = models.FloatField(null=True)
+    price_low   = models.FloatField(null=True)
+    price_close = models.FloatField(null=True)
+    price_open  = models.FloatField(null=True)
+    price_close_adjusted = models.FloatField(null=True)
+    volume      = models.FloatField(null=True)
+
 
 
 class TickerHistoricDay(BaseModel):

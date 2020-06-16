@@ -11,8 +11,8 @@ def random_1_asset():
         description="Selecting any 1 random asset for the portfolio every month"
     )
     strategy = strategy['output'][0]
-    all_monthly_returns = MonthlyReturn.objects.all().order_by('date')
     # logic
+    all_monthly_returns = MonthlyReturn.objects.all().order_by('date')
     months = list(map(lambda x : x.date,all_monthly_returns))
     months = list(dict.fromkeys(months))
     total_months = len(months)
@@ -31,8 +31,8 @@ def random_2_asset():
         description="Selecting any 2 random asset for the portfolio every month equi weighted or less depending on number of asset options" 
     )
     strategy = strategy['output'][0]
+    # logic
     all_monthly_returns = MonthlyReturn.objects.all().order_by('date')
-    # logice
     months = list(map(lambda x : x.date,all_monthly_returns))
     months = list(dict.fromkeys(months))
     total_months = len(months)

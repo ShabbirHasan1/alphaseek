@@ -4,34 +4,34 @@ from dataprep.models import *
 from dataprep.views import *
 from strategytest.views import *
 
-# TickerHistoricDay.objects.all().delete()
-# Company.objects.all().delete()
-# Exchange.objects.all().delete()
-# DailyReturn.objects.all().delete()
-# MonthlyReturn.objects.all().delete()
+TickerHistoricDay.objects.all().delete()
+Company.objects.all().delete()
+Exchange.objects.all().delete()
+DailyReturn.objects.all().delete()
+MonthlyReturn.objects.all().delete()
 
 # <<<< ------ Creating NSE Exchange ------>>>>
 
-# ExchangeClass.create_exchange(            
-#             exchange_name = 'National Stock Exchange of India'
-#             ,exchange_code = 'NSE'
-#             ,exchange_country = 'India'
-#             ,exchange_timezone = 'Asia/Kolkata'
-#             ,exchange_timezone_short = 'IST'
-#             ,timezone_gmt_off_milliseconds = 19800000
-#             ,exchange_currency = "INR"
-# )
+ExchangeClass.create_exchange(            
+            exchange_name = 'National Stock Exchange of India'
+            ,exchange_code = 'NSE'
+            ,exchange_country = 'India'
+            ,exchange_timezone = 'Asia/Kolkata'
+            ,exchange_timezone_short = 'IST'
+            ,timezone_gmt_off_milliseconds = 19800000
+            ,exchange_currency = "INR"
+)
 
 # <<<< ------ Creating BSE Exchange ------>>>>
-# ExchangeClass.create_exchange(            
-#             exchange_name = 'Bombay Stock Exchange'
-#             ,exchange_code = 'BSE'
-#             ,exchange_country = 'India'
-#             ,exchange_timezone = 'Asia/Kolkata'
-#             ,exchange_timezone_short = 'IST'
-#             ,timezone_gmt_off_milliseconds = 19800000
-#             ,exchange_currency = "INR"
-# )
+ExchangeClass.create_exchange(            
+            exchange_name = 'Bombay Stock Exchange'
+            ,exchange_code = 'BSE'
+            ,exchange_country = 'India'
+            ,exchange_timezone = 'Asia/Kolkata'
+            ,exchange_timezone_short = 'IST'
+            ,timezone_gmt_off_milliseconds = 19800000
+            ,exchange_currency = "INR"
+)
 
 
 # <<<< ------ Download all NSE tickers ------>>>>

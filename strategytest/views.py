@@ -12,6 +12,7 @@ import numpy as np
 
 
 
+pd.set_option('mode.chained_assignment', None)
 risk_free_rate = 0.044
 
 class CheckStrategy:
@@ -178,6 +179,7 @@ class CheckStrategy:
             max_drawdown = 0.0
             total_len_df = len(df_final)
             # total_len_df = 30
+            df_final.sort_values(by='Date')
             for k in range(total_len_df):
                 port_return = port_return * ( 1 + df_final['Return'][k])
                 # print(port_return)

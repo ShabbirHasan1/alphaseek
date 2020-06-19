@@ -5,7 +5,7 @@ def daily_nse_pricing_scrape():
     print('ran daily_nse_pricing_scrape')
     timestart = str(datetime.now())
     print('start time - ' + timestart)
-    data_code.NSEIndia.update_all_historic_ticker(partial=False,date_check=True)
+    data_code.NSEIndia.update_all_historic_ticker(date_check=True)
     timeend = str(datetime.now())
     print('end time - ' + timeend)
 

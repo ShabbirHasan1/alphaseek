@@ -35,7 +35,7 @@ ExchangeClass.create_exchange(
 
 
 # <<<< ------ Download all NSE tickers ------>>>>
-# NSEIndia.update_all_equity()
+NSEIndia.update_all_equity()
 
 
 # <<<< ------ Download all historic data ------>>>>

@@ -13,6 +13,6 @@ def fresh_download_nse_pricing():
     print('ran fresh_download_nse_pricing')
     timestart = str(datetime.now())
     print('start time - ' + timestart)
-    data_code.NSEIndia.update_all_historic_ticker()
+    data_code.NSEIndia.update_all_historic_ticker(nse_tracker=True)
     timeend = str(datetime.now())
     print('end time - ' + timeend)

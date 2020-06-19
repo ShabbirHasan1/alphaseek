@@ -394,13 +394,16 @@ class NSEIndia:
 
     # updating all ticker price data
 
-    def update_all_historic_ticker(date_check=False):
+    def update_all_historic_ticker(date_check=False,nse_tracker=False):
         error   = False
         success = False
         error_message_list = []
         output = []
         message = "Request Recieved"
-        companies = Company.objects.filter(is_listed_nse=True).order_by('name')
+        if nse_tracker:
+            companies = Company.objects.filter(is_listed_nse=True,nse_tracker=False).order_by('name')
+        else:
+            companies = Company.objects.filter(is_listed_nse=True).order_by('name')
         total_companies = len(companies)
         company_scraped = 0 
         if test_mode:

@@ -13,7 +13,7 @@ import yfinance as yf
 from datascrape.models import *
 
 path = os.path.dirname(os.path.realpath(__file__))
-test_mode = True
+test_mode = False
 no_run = 3
 
 index_list = [

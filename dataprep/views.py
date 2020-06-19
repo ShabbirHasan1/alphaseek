@@ -6,7 +6,7 @@ import datetime as dt
 from datetime import date, timedelta
 # Create your views here
 
-test_mode = True
+test_mode = False
 no_run = 3
 
 class ReturnCalculate:

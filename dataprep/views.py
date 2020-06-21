@@ -10,7 +10,7 @@ test_mode = False
 no_run = 3
 
 class ReturnCalculate:
-    def calculate_return(company,exchange,date_check=True):
+    def calculate_return(company,exchange):
         error = False
         success = False
         error_message_list = []
@@ -177,7 +177,7 @@ class ReturnCalculate:
             error_message_list.append("Asset not found: " + asset)
         return {'output':output,'message':message,'error':error,'error_message_list':error_message_list,'success':success}
 
-    def calculate_all_returns(exchange='NSE',date_check=True):
+    def calculate_all_returns(exchange='NSE'):
             error   = False
             success = False
             error_message_list = []
@@ -196,7 +196,7 @@ class ReturnCalculate:
                 
 
                 for com in companies:
-                    out = ReturnCalculate.calculate_return(company = com,exchange = exchange,date_check=date_check) 
+                    out = ReturnCalculate.calculate_return(company = com,exchange = exchange) 
                     output.append(out['output'])
                     error_message_list.extend(out['error_message_list']) 
                     com.nse_return_update_date = date.today()
@@ -216,7 +216,7 @@ class ReturnCalculate:
             return {'output':output,'message':message,'error':error,'error_message_list':error_message_list,'success':success}
 
 
-    def calculate_index_return(index,date_check=True):
+    def calculate_index_return(index):
         error = False
         success = False
         error_message_list = []
@@ -406,7 +406,7 @@ class ReturnCalculate:
             
 
             for ind in indexes:
-                out = ReturnCalculate.calculate_index_return(index = ind,date_check=date_check) 
+                out = ReturnCalculate.calculate_index_return(index = ind) 
                 output.append(out['output'])
                 error_message_list.extend(out['error_message_list']) 
                 ind.return_update_date = date.today()

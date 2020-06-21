@@ -42,16 +42,16 @@ NSEIndia.update_all_equity()
 # NSEIndia.update_all_historic_ticker()
 
 # <<<< ------ Creating Indexes ------>>>>
-# IndexClass.create_index(
-#     name="Nifty 50",ticker="NSEI",exchange_code="NSE"
-# )
+IndexClass.create_index(
+    name="Nifty 50",ticker="NSEI",exchange_code="NSE"
+)
 
-# IndexClass.create_index(
-#     name="Sensex",ticker="BSESN",exchange_code="BSE"
-# )
+IndexClass.create_index(
+    name="Sensex",ticker="BSESN",exchange_code="BSE"
+)
 
 # <<<< ------ Download all historic index data ------>>>>
-# IndexClass.update_all_historic_index()
+IndexClass.update_all_historic_index()
 
 # <<<< ------ Compute equity returns ------>>>>
 # ReturnCalculate.calculate_all_returns()

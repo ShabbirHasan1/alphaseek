@@ -290,6 +290,7 @@ def crud_exchange(request):
                     ,'exchange_country':trans.exchange_country
                     ,'exchange_timezone':trans.exchange_timezone
                     ,'exchange_timezone_short':trans.exchange_timezone_short
+                    ,'exchange_currency':trans.exchange_currency
                     ,'timezone_gmt_off_milliseconds':trans.timezone_gmt_off_milliseconds
                     ,'created_at':str(trans.created_at)[:19]
                     ,'modified_at':str(trans.modified_at)[:19]

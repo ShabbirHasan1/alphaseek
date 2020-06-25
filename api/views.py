@@ -735,7 +735,7 @@ def crud_index(request):
                     'id':trans.id
                     ,'name':trans.name
                     ,'ticker':trans.ticker
-                    ,'exchange':trans.exchange__name
+                    ,'exchange':trans.exchange__exchange_name
                     ,'price_update_date':trans.price_update_date
                     ,'return_update_date':trans.return_update_date
                     ,'created_at':str(trans.created_at)[:19]

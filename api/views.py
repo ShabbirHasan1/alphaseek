@@ -311,7 +311,6 @@ def crud_exchange(request):
     obj['error_list'] = error_message_list
     return HttpResponse(json.dumps(obj), content_type='application/json')
 
-
 # CRUD for companies
 
 def read_company(request):
@@ -397,7 +396,7 @@ def crud_company(request):
     check_operation = listvar_check(variable_name='operation',value=operation,allowedlist=operations_allowed_default)
     if not check_operation['error']:
         if operation == "read":
-            pass
+            # pass
             out_read_company = read_company(request) 
             message = out_read_company['message']               
             tranObjs = out_read_company['output']
@@ -464,7 +463,6 @@ def crud_company(request):
     obj['error'] = error
     obj['error_list'] = error_message_list
     return HttpResponse(json.dumps(obj), content_type='application/json')
-
 
 def read_company_nse_prices(request):
     error = False
@@ -600,6 +598,156 @@ def crud_company_nse_prices(request):
                     ,'volume':trans.volume
                     ,'dividends':trans.dividends
                     ,'stock_split':trans.stock_split
+                })
+    
+    else:
+        error = check_operation['error']
+        message = "Operation Not Specified"
+        error_message_list.append(check_operation['errormessage'])
+
+    obj['result'] = result
+    obj['filter'] = filters
+    obj['num_pages'] = num_pages
+    obj['total_records'] = total_records
+    obj['message'] = message
+    obj['status'] = status
+    obj['error'] = error
+    obj['error_list'] = error_message_list
+    return HttpResponse(json.dumps(obj), content_type='application/json')
+
+def read_index(request):
+    error = False
+    success = False
+    error_message_list = []
+    message = "Request Recieved!"
+    filters = {}
+    num_pages = 1
+    total_records = 0 
+    tranObjs = Company.objects.none()
+    page_num = get_param(request, 'page_num', "1")
+    page_size = get_param(request, 'page_size', "10")
+    search = get_param(request,'search',None) 
+    sort_by = get_param(request,'sort_by',None) 
+    order = get_param(request,'order_by',None)    
+    data_id = get_param(request,'data_id',None)
+    
+    if data_id != None and data_id != "":
+        tranObjs = Index.objects.filter(id=data_id)
+    else:
+        tranObjs = Index.objects.all()
+
+        # Filters/Sorting Start
+        if search !=None and search !="":
+            tranObjs = tranObjs.filter(Q(name__icontains=search) | Q(ticker__icontains=search))
+
+        if sort_by !=None and sort_by !="" and sort_by != "none":
+            if order == "asc":
+                tranObjs = tranObjs.order_by(sort_by)
+            else:
+                tranObjs = tranObjs.order_by("-" + sort_by)
+        # Filters/Sorting End
+    # pagination variable
+
+    total_records = tranObjs.count()    
+    if page_num != None and page_num != "":
+        page_num = int(page_num)
+        tranObjs = Paginator(tranObjs, int(page_size))
+        try:
+            tranObjs = tranObjs.page(page_num)
+        except:
+            tranObjs = tranObjs
+        num_pages = int(math.ceil(total_records / float(int(page_size))))
+    # data = list(tranObjs)
+    message  = "Success!"
+    success = True
+    
+    filters['sort_by'] = [
+                        {'value':'name','label':'Name'},
+                        {'value':'ticker','label':'Ticker'}
+                       ]
+                
+
+    filters['order_by'] = [{'value':'asc','label':'Ascending'},
+                           {'value':'desc','label':'Descending'}]
+
+    return({
+        'output':tranObjs,
+        'num_pages':num_pages,
+        'total_records':total_records,
+        'error':error,
+        'error_message_list':error_message_list,
+        'filter':filters,
+        'message':message,
+        'success':success
+    })
+
+def crud_index(request):
+    obj = {}
+    status = False
+    result = []
+    message = "Request Recieved"
+    filters = {}
+    tranObjs = Exchange.objects.none()
+    operation = get_param(request, 'operation', None)
+    error = False
+    error_message_list = []
+    num_pages = 1
+    total_records = 0 
+    
+    check_operation = listvar_check(variable_name='operation',value=operation,allowedlist=operations_allowed_default)
+    if not check_operation['error']:
+        if operation == "read":
+            # pass
+            out_read = read_index(request) 
+            message = out_read['message']               
+            tranObjs = out_read['output']
+            error_message_list.extend(out_read['error_message_list'])               
+            error = out_read['error']     
+            status = out_read['success']     
+            num_pages     = out_read['num_pages']          
+            filters       = out_read['filter']     
+            total_records = out_read['total_records']        
+
+        if operation in ["create","update"]:
+            pass
+            # out_create_update_exchange = create_update_exchange(request) 
+            # message = out_create_update_exchange['message']               
+            # tranObjs = out_create_update_exchange['output']
+            # error_message_list.extend(out_create_update_exchange['error_message_list'])               
+            # error = out_create_update_exchange['error']   
+            # status = out_create_update_exchange['success']          
+
+        if operation == "delete":
+            pass
+            # out_delete_exchange = delete_exchange(request) 
+            # message = out_delete_exchange['message']               
+            # tranObjs = out_delete_exchange['output']               
+            # error_message_list.extend(out_delete_exchange['error_message_list'])               
+            # error = out_delete_exchange['error']     
+            # status = out_delete_exchange['success']           
+
+        if not error:
+            for trans in tranObjs:
+                TickerData = TickerHistoricDay.objects.filter(company=trans)
+                first_nse_ticker_date = TickerData.aggregate(Min('date'))
+                last_nse_ticker_date = TickerData.aggregate(Max('date'))
+                result.append({
+                    'id':trans.id
+                    ,'name':trans.name
+                    ,'isin_no':trans.isin_no
+                    ,'is_listed_nse':trans.is_listed_nse
+                    ,'nse_ticker':trans.nse_ticker
+                    ,'industry_sector':trans.industry_sector
+                    ,'nse_tracker':trans.nse_tracker
+                    ,'nse_price_update_db_date':str(trans.nse_price_update_db_date)[:19]
+                    ,'nse_return_update_date':str(trans.nse_return_update_date)[:19]
+                    ,'created_at':str(trans.created_at)[:19]
+                    ,'modified_at':str(trans.modified_at)[:19]
+                    # ,'min_nse_ticker_date':str(first_nse_ticker_date.strftime('%d-%b-%Y'))
+                    # ,'last_nse_ticker_date':str(last_nse_ticker_date.strftime('%d-%b-%Y'))
+                    ,'min_nse_ticker_date':str(first_nse_ticker_date['date__min'])
+                    ,'last_nse_ticker_date':str(last_nse_ticker_date['date__max'])
+                    ,'total_nse_prices':TickerData.count()
                 })
     
     else:

@@ -740,8 +740,8 @@ def crud_index(request):
                     ,'return_update_date':str(trans.return_update_date)[:19]
                     ,'created_at':str(trans.created_at)[:19]
                     ,'modified_at':str(trans.modified_at)[:19]
-                    ,'min_nse_ticker_date':str(first_ticker_date['date__min'])
-                    ,'last_nse_ticker_date':str(last_ticker_date['date__max'])
+                    ,'min_ticker_date':str(first_ticker_date['date__min'])
+                    ,'last_ticker_date':str(last_ticker_date['date__max'])
                     ,'total_prices':TickerData.count()
                 })
     

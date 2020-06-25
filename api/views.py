@@ -728,26 +728,21 @@ def crud_index(request):
 
         if not error:
             for trans in tranObjs:
-                TickerData = TickerHistoricDay.objects.filter(company=trans)
-                first_nse_ticker_date = TickerData.aggregate(Min('date'))
-                last_nse_ticker_date = TickerData.aggregate(Max('date'))
+                TickerData = IndexHistoricDay.objects.filter(index=trans)
+                first_ticker_date = TickerData.aggregate(Min('date'))
+                last_ticker_date = TickerData.aggregate(Max('date'))
                 result.append({
                     'id':trans.id
                     ,'name':trans.name
-                    ,'isin_no':trans.isin_no
-                    ,'is_listed_nse':trans.is_listed_nse
-                    ,'nse_ticker':trans.nse_ticker
-                    ,'industry_sector':trans.industry_sector
-                    ,'nse_tracker':trans.nse_tracker
-                    ,'nse_price_update_db_date':str(trans.nse_price_update_db_date)[:19]
-                    ,'nse_return_update_date':str(trans.nse_return_update_date)[:19]
+                    ,'ticker':trans.ticker
+                    ,'exchange':trans.exchange__name
+                    ,'price_update_date':trans.price_update_date
+                    ,'return_update_date':trans.return_update_date
                     ,'created_at':str(trans.created_at)[:19]
                     ,'modified_at':str(trans.modified_at)[:19]
-                    # ,'min_nse_ticker_date':str(first_nse_ticker_date.strftime('%d-%b-%Y'))
-                    # ,'last_nse_ticker_date':str(last_nse_ticker_date.strftime('%d-%b-%Y'))
-                    ,'min_nse_ticker_date':str(first_nse_ticker_date['date__min'])
-                    ,'last_nse_ticker_date':str(last_nse_ticker_date['date__max'])
-                    ,'total_nse_prices':TickerData.count()
+                    ,'min_nse_ticker_date':str(first_ticker_date['date__min'])
+                    ,'last_nse_ticker_date':str(last_ticker_date['date__max'])
+                    ,'total_prices':TickerData.count()
                 })
     
     else:

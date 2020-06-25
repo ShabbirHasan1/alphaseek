@@ -736,8 +736,8 @@ def crud_index(request):
                     ,'name':trans.name
                     ,'ticker':trans.ticker
                     ,'exchange':trans.exchange.exchange_name
-                    ,'price_update_date':trans.price_update_date
-                    ,'return_update_date':trans.return_update_date
+                    ,'price_update_date':str(trans.price_update_date)[:19]
+                    ,'return_update_date':str(trans.return_update_date)[:19]
                     ,'created_at':str(trans.created_at)[:19]
                     ,'modified_at':str(trans.modified_at)[:19]
                     ,'min_nse_ticker_date':str(first_ticker_date['date__min'])

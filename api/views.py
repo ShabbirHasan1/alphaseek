@@ -442,8 +442,6 @@ def crud_company(request):
                     ,'nse_return_update_date':str(trans.nse_return_update_date)[:19]
                     ,'created_at':str(trans.created_at)[:19]
                     ,'modified_at':str(trans.modified_at)[:19]
-                    # ,'min_nse_ticker_date':str(first_nse_ticker_date.strftime('%d-%b-%Y'))
-                    # ,'last_nse_ticker_date':str(last_nse_ticker_date.strftime('%d-%b-%Y'))
                     ,'min_nse_ticker_date':str(first_nse_ticker_date['date__min'])
                     ,'last_nse_ticker_date':str(last_nse_ticker_date['date__max'])
                     ,'total_nse_prices':TickerData.count()
@@ -464,7 +462,7 @@ def crud_company(request):
     obj['error_list'] = error_message_list
     return HttpResponse(json.dumps(obj), content_type='application/json')
 
-def read_company_nse_prices(request):
+def read_company_prices(request):
     error = False
     success = False
     error_message_list = []
@@ -473,9 +471,9 @@ def read_company_nse_prices(request):
     num_pages = 1
     total_records = 0 
     tranObjs = TickerHistoricDay.objects.none()
-    page_num = get_param(request, 'page_num', "1")
-    page_size = get_param(request, 'page_size', "10000")
-    # search = get_param(request,'search',None) 
+    # page_num = get_param(request, 'page_num', "1")
+    # page_size = get_param(request, 'page_size', "10000")
+
     sort_by = get_param(request,'sort_by',None) 
     order = get_param(request,'order_by',None)    
     data_id = get_param(request,'data_id',None)
@@ -501,14 +499,14 @@ def read_company_nse_prices(request):
     # pagination variable
 
     total_records = tranObjs.count()    
-    if page_num != None and page_num != "":
-        page_num = int(page_num)
-        tranObjs = Paginator(tranObjs, int(page_size))
-        try:
-            tranObjs = tranObjs.page(page_num)
-        except:
-            tranObjs = tranObjs
-        num_pages = int(math.ceil(total_records / float(int(page_size))))
+    # if page_num != None and page_num != "":
+    #     page_num = int(page_num)
+    #     tranObjs = Paginator(tranObjs, int(page_size))
+    #     try:
+    #         tranObjs = tranObjs.page(page_num)
+    #     except:
+    #         tranObjs = tranObjs
+    #     num_pages = int(math.ceil(total_records / float(int(page_size))))
     # data = list(tranObjs)
     if no_parameter == 1:
         message = "No parameter shared"
@@ -535,7 +533,7 @@ def read_company_nse_prices(request):
         'success':success
     })
 
-def crud_company_nse_prices(request):
+def crud_company_prices(request):
     obj = {}
     status = False
     result = {}
@@ -552,15 +550,15 @@ def crud_company_nse_prices(request):
     if not check_operation['error']:
         if operation == "read":
             pass
-            out_read_company_nse_prices = read_company_nse_prices(request) 
-            message = out_read_company_nse_prices['message']               
-            tranObjs = out_read_company_nse_prices['output']
-            error_message_list.extend(out_read_company_nse_prices['error_message_list'])               
-            error = out_read_company_nse_prices['error']     
-            status = out_read_company_nse_prices['success']     
-            num_pages     = out_read_company_nse_prices['num_pages']          
-            filters       = out_read_company_nse_prices['filter']     
-            total_records = out_read_company_nse_prices['total_records']          
+            out_read = read_company_prices(request) 
+            message = out_read['message']               
+            tranObjs = out_read['output']
+            error_message_list.extend(out_read['error_message_list'])               
+            error = out_read['error']     
+            status = out_read['success']     
+            num_pages     = out_read['num_pages']          
+            filters       = out_read['filter']     
+            total_records = out_read['total_records']          
 
         if operation in ["create","update"]:
             pass
@@ -581,24 +579,35 @@ def crud_company_nse_prices(request):
             # status = out_delete_exchange['success']           
 
         if not error:
-            
+            company = tranObjs[0].company
             result['company'] = {
-                    'company_name':tranObjs[0].company.name,
-                    'nse_ticker':tranObjs[0].company.nse_ticker,
-                    'exchange':tranObjs[0].exchange.exchange_name,
+                    'id':company.id
+                    ,'name':company.name
+                    ,'isin_no':company.isin_no
+                    ,'is_listed_nse':company.is_listed_nse
+                    ,'nse_ticker':company.nse_ticker
+                    ,'industry_sector':company.industry_sector
+                    ,'nse_tracker':company.nse_tracker
+                    ,'nse_price_update_db_date':str(company.nse_price_update_db_date)[:19]
+                    ,'nse_return_update_date':str(company.nse_return_update_date)[:19]
+                    ,'created_at':str(company.created_at)[:19]
+                    ,'modified_at':str(company.modified_at)[:19]
                     }
-            result['prices']=[]
-            for trans in tranObjs:            
-                result['prices'].append({
-                    'date':str(trans.date)[:19]
-                    ,'price_high':trans.price_high
-                    ,'price_low':trans.price_low
-                    ,'price_close':trans.price_close
-                    ,'price_open':trans.price_open
-                    ,'volume':trans.volume
-                    ,'dividends':trans.dividends
-                    ,'stock_split':trans.stock_split
-                })
+            result['prices']={}
+            results['prices']['nse'] = []
+            for trans in tranObjs:       
+                if trans.exchange.exchange_code == "NSE":     
+                    result['prices']['nse'].append({
+                        'date':str(trans.date)[:19]
+                        ,'price_high':trans.price_high
+                        ,'price_low':trans.price_low
+                        ,'price_close':trans.price_close
+                        ,'price_open':trans.price_open
+                        ,'price_close_adjusted':trans.price_close_adjusted
+                        ,'volume':trans.volume
+                        ,'dividends':trans.dividends
+                        ,'stock_split':trans.stock_split
+                    })
     
     else:
         error = check_operation['error']

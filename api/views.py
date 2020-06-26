@@ -594,7 +594,7 @@ def crud_company_prices(request):
                     ,'modified_at':str(company.modified_at)[:19]
                     }
             result['prices']={}
-            results['prices']['nse'] = []
+            result['prices']['nse'] = []
             for trans in tranObjs:       
                 if trans.exchange.exchange_code == "NSE":     
                     result['prices']['nse'].append({

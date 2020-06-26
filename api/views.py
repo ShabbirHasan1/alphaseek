@@ -598,7 +598,7 @@ def crud_company_prices(request):
                     }
             result['prices']={}
             result['prices']['nse'] = []
-            outdata = serializers.serialize('json', tranObjs)
+            outdata = serializers.serialize('python', tranObjs)
             result['prices']['nse'] = [d['fields'] for d in outdata]
             # for trans in tranObjs:       
                 

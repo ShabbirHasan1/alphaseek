@@ -47,11 +47,12 @@ INSTALLED_APPS = [
     'strategyout'
 ]
 
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.http.ConditionalGetMiddleware',
+    # 'django.middleware.http.ConditionalGetMiddleware',
     # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -59,6 +60,9 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware'
 ]
+
+
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10621440
 
 ROOT_URLCONF = 'alphaseek.urls'
 

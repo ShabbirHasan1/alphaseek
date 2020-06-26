@@ -481,11 +481,14 @@ def read_company_prices(request):
     order = get_param(request,'order_by',None)    
     data_id = get_param(request,'data_id',None)
     ticker = get_param(request,'ticker',None)
+    isin = get_param(request,'isin',None)
     no_parameter = 0
     if data_id != None and data_id != "":
         tranObjs = TickerHistoricDay.objects.filter(company__id=data_id)
     elif ticker != None and ticker != "":
         tranObjs = TickerHistoricDay.objects.filter(company__nse_ticker=ticker)
+    elif isin != None and isin != "":
+        tranObjs = TickerHistoricDay.objects.filter(company__isin_no=isin)
     else:
         no_parameter = 1
         tranObjs = TickerHistoricDay.objects.none()

@@ -598,7 +598,8 @@ def crud_company_prices(request):
                     }
             result['prices']={}
             result['prices']['nse'] = []
-            result['prices']['nse'] = json.loads(serializers.serialize('json', tranObjs))
+            outdata = serializers.serialize('json', tranObjs)
+            result['prices']['nse'] = [d['fields'] for d in outdata]
             # for trans in tranObjs:       
                 
             #     if trans.exchange.exchange_code == "NSE":     

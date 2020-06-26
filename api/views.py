@@ -594,9 +594,9 @@ def crud_company_prices(request):
                     ,'created_at':str(company.created_at)[:19]
                     ,'modified_at':str(company.modified_at)[:19]
                     }
-            result['prices']={}
-            result['prices']['nse'] = []
-            result['prices']['nse'] = serializers.serialize('json', tranObjs.filter(exchange__exchange_code = "NSE"))
+            # result['prices']={}
+            # result['prices']['nse'] = []
+            result['prices'] = serializers.serialize('json', tranObjs)
             # for trans in tranObjs:       
                 
             #     if trans.exchange.exchange_code == "NSE":     

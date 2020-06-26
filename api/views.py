@@ -603,7 +603,7 @@ def crud_company_prices(request):
                         ,'price_low':trans.price_low
                         ,'price_close':trans.price_close
                         ,'price_open':trans.price_open
-                        ,'price_close_adjusted':trans.price_close_adjusted
+                        ,'price_close_adjusted':trans.price_open
                         ,'volume':trans.volume
                         ,'dividends':trans.dividends
                         ,'stock_split':trans.stock_split

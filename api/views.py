@@ -535,7 +535,7 @@ def read_company_prices(request):
     })
 
 def crud_company_prices(request):
-    obj = {}
+    # obj = {}
     status = False
     result = {}
     message = "Request Recieved"
@@ -596,7 +596,7 @@ def crud_company_prices(request):
                     }
             # result['prices']={}
             # result['prices']['nse'] = []
-            result = serializers.serialize('xml', tranObjs)
+            obj = serializers.serialize('json', tranObjs)
             # for trans in tranObjs:       
                 
             #     if trans.exchange.exchange_code == "NSE":     
@@ -617,14 +617,14 @@ def crud_company_prices(request):
         message = "Operation Not Specified"
         error_message_list.append(check_operation['errormessage'])
 
-    obj['result'] = result
-    obj['filter'] = filters
-    obj['num_pages'] = num_pages
-    obj['total_records'] = total_records
-    obj['message'] = message
-    obj['status'] = status
-    obj['error'] = error
-    obj['error_list'] = error_message_list
+    # obj['result'] = result
+    # obj['filter'] = filters
+    # obj['num_pages'] = num_pages
+    # obj['total_records'] = total_records
+    # obj['message'] = message
+    # obj['status'] = status
+    # obj['error'] = error
+    # obj['error_list'] = error_message_list
     return HttpResponse(json.dumps(obj), content_type='application/json')
 
 def read_index(request):

@@ -626,9 +626,9 @@ def crud_company_prices(request):
         error_message_list.append(check_operation['errormessage'])
 
     obj['result'] = result
-    obj['filter'] = filters
-    obj['num_pages'] = num_pages
-    obj['total_records'] = total_records
+    # obj['filter'] = filters
+    # obj['num_pages'] = num_pages
+    # obj['total_records'] = total_records
     obj['message'] = message
     obj['status'] = status
     obj['error'] = error

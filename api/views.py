@@ -9,6 +9,7 @@ import json
 import operator
 import math
 from django.views.decorators.csrf import csrf_exempt
+
 # operations_allowed_default = ['create','read','update','delete']
 operations_allowed_default = ['read']
 
@@ -595,19 +596,21 @@ def crud_company_prices(request):
                     }
             result['prices']={}
             result['prices']['nse'] = []
-            for trans in tranObjs:       
-                if trans.exchange.exchange_code == "NSE":     
-                    result['prices']['nse'].append({
-                        'date':str(trans.date)[:19]
-                        ,'price_high':trans.price_high
-                        ,'price_low':trans.price_low
-                        ,'price_close':trans.price_close
-                        ,'price_open':trans.price_open
-                        ,'price_close_adjusted':trans.price_open
-                        ,'volume':trans.volume
-                        ,'dividends':trans.dividends
-                        ,'stock_split':trans.stock_split
-                    })
+            result['prices']['nse'] = serializers.serialize('json', tranObjs.filter(exchange__exchange_code = "NSE"))
+            # for trans in tranObjs:       
+                
+            #     if trans.exchange.exchange_code == "NSE":     
+            #         result['prices']['nse'].append({
+            #             'date':str(trans.date)[:19]
+            #             ,'price_high':trans.price_high
+            #             ,'price_low':trans.price_low
+            #             ,'price_close':trans.price_close
+            #             ,'price_open':trans.price_open
+            #             ,'price_close_adjusted':trans.price_open
+            #             ,'volume':trans.volume
+            #             ,'dividends':trans.dividends
+            #             ,'stock_split':trans.stock_split
+            #         })
     
     else:
         error = check_operation['error']

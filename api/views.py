@@ -612,7 +612,7 @@ def crud_company_prices(request):
             sub_nse_data = tranObjs.filter(exchange__exchange_code = "NSE")
             dates_nse = list(map(lambda x : str(x.date)[:19],sub_nse_data))
             prices_nse = list(map(lambda x : round(x.price_close_adjusted,2),sub_nse_data))
-            db_nse = pd.DataFrame({'Date':date_list,'Price NSE':prices_nse}, columns = ['Date','Prices NSE'])
+            db_nse = pd.DataFrame({'Date':date_list,'Price NSE':prices_nse}, columns = ['Date','Price NSE'])
             df_final = pd.merge(df_final,
                                         db_nse[['Date', 'Price NSE']],
                                         on='Date', 
@@ -621,8 +621,8 @@ def crud_company_prices(request):
             for i in range(total_dates):       
                 # if trans.exchange.exchange_code == "NSE":     
                 result['prices'].append({
-                    'date':df_final['Date'],
-                    'price_nse':df_final['Price NSE']
+                    'date':df_final['Date'][i],
+                    'price_nse':df_final['Price NSE'][i]
                     # ,'price_high':trans.price_high
                     # ,'price_low':trans.price_low
                     # ,'price_close':round(trans.price_close,2)

@@ -604,7 +604,7 @@ def crud_company_prices(request):
             # outdata = serializers.serialize('python', tranObjs)
             # outdata_sorted = json.dumps([d['fields'] for d in outdata])
             # result['prices']['nse'] = json.loads(outdata_sorted)
-            tranObjs = tranObjs.order_by('-date')
+            tranObjs = tranObjs.order_by('date')
             date_list = list(map(lambda x : str(x.date)[:19],tranObjs))
             date_list = list(dict.fromkeys(date_list))
             total_dates = len(date_list)

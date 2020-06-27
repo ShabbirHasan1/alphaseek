@@ -586,6 +586,7 @@ def crud_company_prices(request):
 
         if not error:
             company = tranObjs[0].company
+            
             result['company'] = {
                     'id':company.id
                     ,'name':company.name
@@ -611,7 +612,7 @@ def crud_company_prices(request):
             df_final  = pd.DataFrame({'Date':date_list}, columns = ['Date'])
             sub_nse_data = tranObjs.filter(exchange__exchange_code = "NSE")
             dates_nse = list(map(lambda x : str(x.date)[:19],sub_nse_data))
-            prices_nse = list(map(lambda x : round(x.price_close_adjusted,2),sub_nse_data))
+            prices_nse = list(map(lambda x : round(x.price_close,2),sub_nse_data))
             db_nse = pd.DataFrame({'Date':date_list,'Price NSE':prices_nse}, columns = ['Date','Price NSE'])
             df_final = pd.merge(df_final,
                                         db_nse[['Date', 'Price NSE']],
@@ -623,14 +624,6 @@ def crud_company_prices(request):
                 result['prices'].append({
                     'date':df_final['Date'][i],
                     'Price NSE':df_final['Price NSE'][i]
-                    # ,'price_high':trans.price_high
-                    # ,'price_low':trans.price_low
-                    # ,'price_close':round(trans.price_close,2)
-                    # ,'price_open':trans.price_open
-                    # ,'price_close_adjusted':round(trans.price_close_adjusted,2)
-                    # ,'volume':trans.volume
-                    # ,'dividends':trans.dividends
-                    # ,'stock_split':trans.stock_split
                 })
 
     

@@ -622,7 +622,7 @@ def crud_company_prices(request):
                 # if trans.exchange.exchange_code == "NSE":     
                 result['prices'].append({
                     'date':df_final['Date'][i],
-                    'price_nse':df_final['Price NSE'][i]
+                    'Price NSE':df_final['Price NSE'][i]
                     # ,'price_high':trans.price_high
                     # ,'price_low':trans.price_low
                     # ,'price_close':round(trans.price_close,2)

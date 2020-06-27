@@ -605,7 +605,7 @@ def crud_company_prices(request):
             # outdata_sorted = json.dumps([d['fields'] for d in outdata])
             # result['prices']['nse'] = json.loads(outdata_sorted)
             
-            date_list = list(map(lambda x : x.date,tranObjs))
+            date_list = list(map(lambda x : str(x.date)[:19],tranObjs))
             date_list = list(dict.fromkeys(date_list))
             total_dates = len(date_list)
             df_final  = pd.DataFrame({'Date':date_list}, columns = ['Date'])

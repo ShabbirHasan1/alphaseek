@@ -9,7 +9,7 @@ import json
 import operator
 import math
 from django.views.decorators.csrf import csrf_exempt
-
+import pandas as pd
 
 
 # operations_allowed_default = ['create','read','update','delete']
@@ -600,20 +600,34 @@ def crud_company_prices(request):
                     ,'modified_at':str(company.modified_at)[:19]
                     }
             result['prices']={}
-            result['prices']['nse'] = []
+            result['prices'] = []
             # outdata = serializers.serialize('python', tranObjs)
             # outdata_sorted = json.dumps([d['fields'] for d in outdata])
             # result['prices']['nse'] = json.loads(outdata_sorted)
+            
+            date_list = list(map(lambda x : x.date,tranObjs))
+            date_list = list(dict.fromkeys(date_list))
+            total_dates = len(date_list)
+            df_final  = pd.DataFrame({'Date':date_list}, columns = ['Date'])
             sub_nse_data = tranObjs.filter(exchange__exchange_code = "NSE")
-            for trans in sub_nse_data:       
+            dates_nse = list(map(lambda x : str(x.date)[:19],sub_nse_data))
+            prices_nse = list(map(lambda x : round(x.price_close_adjusted,2),sub_nse_data))
+            db_nse = pd.DataFrame({'Date':date_list,'Price NSE':prices_nse}, columns = ['Date','Prices NSE'])
+            df_final = pd.merge(df_final,
+                                        db_nse[['Date', 'Price NSE']],
+                                        on='Date', 
+                                        how='left')
+
+            for i in range(total_dates):       
                 # if trans.exchange.exchange_code == "NSE":     
-                result['prices']['nse'].append({
-                    'date':str(trans.date)[:19]
+                result['prices'].append({
+                    'date':df_final['Date'],
+                    'price_nse':df_final['Price NSE']
                     # ,'price_high':trans.price_high
                     # ,'price_low':trans.price_low
                     # ,'price_close':round(trans.price_close,2)
                     # ,'price_open':trans.price_open
-                    ,'price_close_adjusted':round(trans.price_close_adjusted,2)
+                    # ,'price_close_adjusted':round(trans.price_close_adjusted,2)
                     # ,'volume':trans.volume
                     # ,'dividends':trans.dividends
                     # ,'stock_split':trans.stock_split

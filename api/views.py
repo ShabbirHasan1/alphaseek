@@ -609,14 +609,14 @@ def crud_company_prices(request):
                 # if trans.exchange.exchange_code == "NSE":     
                 result['prices']['nse'].append({
                     'date':str(trans.date)[:19]
-                    ,'price_high':trans.price_high
-                    ,'price_low':trans.price_low
+                    # ,'price_high':trans.price_high
+                    # ,'price_low':trans.price_low
                     ,'price_close':trans.price_close
-                    ,'price_open':trans.price_open
-                    ,'price_close_adjusted':trans.price_open
-                    ,'volume':trans.volume
-                    ,'dividends':trans.dividends
-                    ,'stock_split':trans.stock_split
+                    # ,'price_open':trans.price_open
+                    ,'price_close_adjusted':trans.price_close_adjusted
+                    # ,'volume':trans.volume
+                    # ,'dividends':trans.dividends
+                    # ,'stock_split':trans.stock_split
                 })
 
     

@@ -62,7 +62,6 @@ MIDDLEWARE = [
 ]
 
 
-DATA_UPLOAD_MAX_MEMORY_SIZE = 10621440
 
 ROOT_URLCONF = 'alphaseek.urls'
 

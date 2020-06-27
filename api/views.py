@@ -611,9 +611,9 @@ def crud_company_prices(request):
                     'date':str(trans.date)[:19]
                     # ,'price_high':trans.price_high
                     # ,'price_low':trans.price_low
-                    ,'price_close':trans.price_close
+                    ,'price_close':round(trans.price_close,2)
                     # ,'price_open':trans.price_open
-                    ,'price_close_adjusted':trans.price_close_adjusted
+                    ,'price_close_adjusted':round(trans.price_close_adjusted,2)
                     # ,'volume':trans.volume
                     # ,'dividends':trans.dividends
                     # ,'stock_split':trans.stock_split

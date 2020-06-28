@@ -721,7 +721,13 @@ def read_index(request):
     
     filters['sort_by'] = [
                         {'value':'name','label':'Name'},
-                        {'value':'ticker','label':'Ticker'}
+                        {'value':'ticker','label':'Ticker'},
+                        {'value':'return_1d','label':'1 Day Return'},
+                        {'value':'return_1m','label':'1 Month Return'},
+                        {'value':'return_1y','label':'1 Year Return'},
+                        {'value':'annualized_return','label':'Average Return'},
+                        {'value':'annualized_vol','label':'Volatility Return'},
+                        {'value':'volume','label':'Volume Traded'}
                        ]
                 
 
@@ -793,7 +799,7 @@ def crud_index(request):
                     'id':trans.id
                     ,'name':trans.name
                     ,'ticker':trans.ticker
-                    ,'exchange':trans.exchange.exchange_name
+                    ,'exchange':trans.exchange.exchange_code
                     ,'price_update_date':str(trans.price_update_date)[:19]
                     ,'return_update_date':str(trans.return_update_date)[:19]
                     ,'created_at':str(trans.created_at)[:19]

@@ -612,6 +612,19 @@ def crud_company_prices(request):
                     ,'nse_return_update_date':str(company.nse_return_update_date)[:19]
                     ,'created_at':str(company.created_at)[:19]
                     ,'modified_at':str(company.modified_at)[:19]
+                    ,'nse_return_date':company.nse_return_date
+                    ,'nse_return_1d':company.nse_return_1d
+                    ,'nse_return_1m':company.nse_return_1m
+                    ,'nse_return_1y':company.nse_return_1y
+                    ,'nse_annualized_return':company.nse_annualized_return
+                    ,'nse_annualized_vol':company.nse_annualized_vol
+                    ,'nse_trade_date':company.nse_trade_date
+                    ,'nse_price_high':company.nse_price_high
+                    ,'nse_price_low':company.nse_price_low
+                    ,'nse_price_close':company.nse_price_close
+                    ,'nse_price_open':company.nse_price_open
+                    ,'nse_price_close_adjusted':company.nse_price_close_adjusted
+                    ,'nse_volume':company.nse_volume
                     }
             result['prices']={}
             result['prices'] = []

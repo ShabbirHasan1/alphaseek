@@ -4,9 +4,11 @@ import pandas as pd
 from dataprep.models import *
 import datetime as dt
 from datetime import date, timedelta
+import math
+import numpy as np
 # Create your views here
 
-test_mode = False
+test_mode = True
 no_run = 3
 
 class ReturnCalculate:
@@ -215,7 +217,6 @@ class ReturnCalculate:
                     message = "Found errors! Check the error list!"
             return {'output':output,'message':message,'error':error,'error_message_list':error_message_list,'success':success}
 
-
     def calculate_index_return(index):
         error = False
         success = False
@@ -383,49 +384,185 @@ class ReturnCalculate:
             error_message_list.append("Asset not found: " + index.ticker )
         return {'output':output,'message':message,'error':error,'error_message_list':error_message_list,'success':success}
 
-
-
-
     def calculate_all_index_returns(date_check=True):
-            error   = False
+        error   = False
+        success = False
+        error_message_list = []
+        output = []
+        message = "Request Recieved"
+        if test_mode:
+            indexes = Index.objects.all().order_by('name')
+            indexes = [indexes[0],indexes[1]]
+        else:
+            indexes = Index.objects.all()
+        
+        total_indexes = len(indexes)
+        indexes_calculated = 0 
+        
+
+        for ind in indexes:
+            out = ReturnCalculate.calculate_index_return(index = ind) 
+            output.append(out['output'])
+            error_message_list.extend(out['error_message_list']) 
+            ind.return_update_date = date.today()
+            ind.save()
+            indexes_calculated = indexes_calculated + 1
+            # print(error_message_list)
+            print(out['message'] + " | "+ str(indexes_calculated) + "/" + str(total_indexes))
+            
+        if len(error_message_list) == 0:                
+            success = True
+            error = False
+            message = "Return Calculated!"
+        else:
             success = False
-            error_message_list = []
-            output = []
-            # output['monthly'] = []
-            # output['daily'] = []
-            message = "Request Recieved"
-            # if exchange =="NSE":
-            if test_mode:
-                indexes = Index.objects.all().order_by('name')
-                indexes = [indexes[0],indexes[1]]
-            else:
-                indexes = Index.objects.all()
-            
-            total_indexes = len(indexes)
-            indexes_calculated = 0 
-            
+            error = True
+            message = "Found errors! Check the error list!"
+        return {'output':output,'message':message,'error':error,'error_message_list':error_message_list,'success':success}
 
-            for ind in indexes:
-                out = ReturnCalculate.calculate_index_return(index = ind) 
-                output.append(out['output'])
-                error_message_list.extend(out['error_message_list']) 
-                ind.return_update_date = date.today()
-                ind.save()
-                indexes_calculated = indexes_calculated + 1
-                # print(error_message_list)
-                print(out['message'] + " | "+ str(indexes_calculated) + "/" + str(total_indexes))
-                
-            if len(error_message_list) == 0:                
-                success = True
+class UpdateTicker:
+    def update_ticker(company, exchange):
+        error = False
+        success = False
+        error_message_list = []
+        output = {}
+        message = "Request Recieved"
+        price_data = TickerHistoricDay.objects.filter(exchange__exchange_code = exchange, company = company).order_by('-date')
+        daily_return_data = DailyReturn.objects.filter(exchange__exchange_code = exchange, company = company).order_by('-date')
+        monthly_return_data = MonthlyReturn.objects.filter(exchange__exchange_code = exchange, company = company).order_by('-date')
+        date_list = list(map(lambda x : str(x.date)[:19],daily_return_data))
+        return_list = list(map(lambda x : x.return_1d,daily_return_data))
+        # date_list = list(dict.fromkeys(date_list))
+        db_return = pd.DataFrame({'Date':date_list,'Return':return_list}, columns = ['Date','Return'])
+        volatility = db_return['Return'].std() * math.sqrt(245)
+        average_return = db_return['Return'].mean() * 245
+        if exchange == "NSE":
+            try:
+                company.nse_trade_date           = price_data[0].date
+                company.nse_price_high           = price_data[0].price_high
+                company.nse_price_low            = price_data[0].price_low
+                company.nse_price_close          = price_data[0].price_close
+                company.nse_price_open           = price_data[0].price_open
+                company.nse_price_close_adjusted = price_data[0].price_close_adjusted
+                company.nse_volume               = price_data[0].volume
+                company.nse_return_date          = daily_return_data[0].date
+                company.nse_return_1d            = daily_return_data[0].return_1d
+                company.nse_return_1m            = monthly_return_data[0].return_1m
+                company.nse_return_1y            = monthly_return_data[0].return_12m
+                company.nse_annualized_return    = average_return
+                company.nse_annualized_vol       = volatility
+                company.save()
                 error = False
-                message = "Return Calculated!"
-            else:
-                success = False
+                success = True
+                message = "Data updation complete for the  " + company.nse_ticker
+            except:
                 error = True
-                message = "Found errors! Check the error list!"
-            return {'output':output,'message':message,'error':error,'error_message_list':error_message_list,'success':success}
+                success = False
+                message = "Data updation error for the  " + company.nse_ticker
+                error_message_list.append("Data updation error for the  " + company.nse_ticker)
+        return {'output':output,'message':message,'error':error,'error_message_list':error_message_list,'success':success}
 
+    def update_all_company():
+        error   = False
+        success = False
+        error_message_list = []
+        output = []
+        message = "Request Recieved"
+        
+        companies = Company.objects.filter(is_listed_nse = True).order_by('name')
+        # total_indexes = len(indexes)
+        companies_calculated = 0 
+        total_companies = companies.count()
+        for com in companies:
+            out = UpdateTicker.update_ticker(company = com, exchange = "NSE") 
+            output.append(out['output'])
+            error_message_list.extend(out['error_message_list']) 
+            companies_calculated = companies_calculated + 1
+            print(out['message'] + " | "+ str(companies_calculated) + "/" + str(total_companies))
+    
+        if len(error_message_list) == 0:                
+            success = True
+            error = False
+            message = "Company Updation Complete!"
+        else:
+            success = False
+            error = True
+            message = "Found errors! Check the error list!"
+        return {'output':{},'message':message,'error':error,'error_message_list':error_message_list,'success':success}
             
+    def update_index(index):
+        error = False
+        success = False
+        error_message_list = []
+        output = {}
+        message = "Request Recieved"
+        price_data = IndexHistoricDay.objects.filter(index = index).order_by('-date')
+        daily_return_data = IndexDailyReturn.objects.filter(index = index).order_by('-date')
+        monthly_return_data = IndexMonthlyReturn.objects.filter(index = index).order_by('-date')
+        date_list = list(map(lambda x : str(x.date)[:19],daily_return_data))
+        return_list = list(map(lambda x : x.return_1d,daily_return_data))
+        # date_list = list(dict.fromkeys(date_list))
+        db_return = pd.DataFrame({'Date':date_list,'Return':return_list}, columns = ['Date','Return'])
+        volatility = db_return['Return'].std() * math.sqrt(245)
+        average_return = db_return['Return'].mean() * 245
+        # if exchange == "NSE":
+        try:
+            index.trade_date           = price_data[0].date
+            index.price_high           = price_data[0].price_high
+            index.price_low            = price_data[0].price_low
+            index.price_close          = price_data[0].price_close
+            index.price_open           = price_data[0].price_open
+            index.price_close_adjusted = price_data[0].price_close_adjusted
+            index.volume               = price_data[0].volume
+            index.return_date          = daily_return_data[0].date
+            index.return_1d            = daily_return_data[0].return_1d
+            index.return_1m            = monthly_return_data[0].return_1m
+            index.return_1y            = monthly_return_data[0].return_12m
+            index.annualized_return    = average_return
+            index.annualized_vol       = volatility
+            index.save()
+            error = False
+            success = True
+            message = "Data updation complete for the  " + index.ticker
+        except:
+            error = True
+            success = False
+            message = "Data updation error for the  " + index.ticker
+            error_message_list.append("Data updation error for the  " + index.ticker)
+        return {'output':output,'message':message,'error':error,'error_message_list':error_message_list,'success':success}
+
+    def update_all_index():
+        error   = False
+        success = False
+        error_message_list = []
+        output = []
+        message = "Request Recieved"
+        
+        indexes = Index.objects.all().order_by('name')
+        # total_indexes = len(indexes)
+        indexes_calculated = 0 
+        total_indexes = indexes.count()
+        for ind in indexes:
+            out = UpdateTicker.update_index(index = ind) 
+            output.append(out['output'])
+            error_message_list.extend(out['error_message_list']) 
+            indexes_calculated = indexes_calculated + 1
+            print(out['message'] + " | "+ str(indexes_calculated) + "/" + str(total_indexes))
+    
+        if len(error_message_list) == 0:                
+            success = True
+            error = False
+            message = "Index Updation Complete!"
+
+        else:
+            success = False
+            error = True
+            message = "Found errors! Check the error list!"
+        return {'output':{},'message':message,'error':error,'error_message_list':error_message_list,'success':success}
+
+
+
+
 
 
 

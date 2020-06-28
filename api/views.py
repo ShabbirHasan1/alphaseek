@@ -448,6 +448,19 @@ def crud_company(request):
                     ,'min_nse_ticker_date':str(first_nse_ticker_date['date__min'])
                     ,'last_nse_ticker_date':str(last_nse_ticker_date['date__max'])
                     ,'total_nse_prices':TickerData.count()
+                    ,'nse_return_date':trans.nse_return_date
+                    ,'nse_return_1d':trans.nse_return_1d
+                    ,'nse_return_1m':trans.nse_return_1m
+                    ,'nse_return_1y':trans.nse_return_1y
+                    ,'nse_annualized_return':trans.nse_annualized_return
+                    ,'nse_annualized_vol':trans.nse_annualized_vol
+                    ,'nse_trade_date':trans.nse_trade_date
+                    ,'nse_price_high':trans.nse_price_high
+                    ,'nse_price_low':trans.nse_price_low
+                    ,'nse_price_close':trans.nse_price_close
+                    ,'nse_price_open':trans.nse_price_open
+                    ,'nse_price_close_adjusted':trans.nse_price_close_adjusted
+                    ,'nse_volume':trans.nse_volume
                 })
     
     else:
@@ -770,6 +783,19 @@ def crud_index(request):
                     ,'min_ticker_date':str(first_ticker_date['date__min'])
                     ,'last_ticker_date':str(last_ticker_date['date__max'])
                     ,'total_prices':TickerData.count()
+                    ,'return_date':trans.return_date
+                    ,'return_1d':trans.return_1d
+                    ,'return_1m':trans.return_1m
+                    ,'return_1y':trans.return_1y
+                    ,'annualized_return':trans.annualized_return
+                    ,'annualized_vol':trans.annualized_vol
+                    ,'trade_date':trans.trade_date
+                    ,'price_high':trans.price_high
+                    ,'price_low':trans.price_low
+                    ,'price_close':trans.price_close
+                    ,'price_open':trans.price_open
+                    ,'price_close_adjusted':trans.price_close_adjusted
+                    ,'volume':trans.volume
                 })
     
     else:

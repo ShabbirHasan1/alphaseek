@@ -448,13 +448,13 @@ def crud_company(request):
                     ,'min_nse_ticker_date':str(first_nse_ticker_date['date__min'])
                     ,'last_nse_ticker_date':str(last_nse_ticker_date['date__max'])
                     ,'total_nse_prices':TickerData.count()
-                    ,'nse_return_date':trans.nse_return_date
+                    ,'nse_return_date':str(trans.nse_return_date)[:19]
                     ,'nse_return_1d':trans.nse_return_1d
                     ,'nse_return_1m':trans.nse_return_1m
                     ,'nse_return_1y':trans.nse_return_1y
                     ,'nse_annualized_return':trans.nse_annualized_return
                     ,'nse_annualized_vol':trans.nse_annualized_vol
-                    ,'nse_trade_date':trans.nse_trade_date
+                    ,'nse_trade_date':str(trans.nse_trade_date)[:19]
                     ,'nse_price_high':trans.nse_price_high
                     ,'nse_price_low':trans.nse_price_low
                     ,'nse_price_close':trans.nse_price_close
@@ -612,13 +612,13 @@ def crud_company_prices(request):
                     ,'nse_return_update_date':str(company.nse_return_update_date)[:19]
                     ,'created_at':str(company.created_at)[:19]
                     ,'modified_at':str(company.modified_at)[:19]
-                    ,'nse_return_date':company.nse_return_date
+                    ,'nse_return_date':str(company.nse_return_date)[:19]
                     ,'nse_return_1d':company.nse_return_1d
                     ,'nse_return_1m':company.nse_return_1m
                     ,'nse_return_1y':company.nse_return_1y
                     ,'nse_annualized_return':company.nse_annualized_return
                     ,'nse_annualized_vol':company.nse_annualized_vol
-                    ,'nse_trade_date':company.nse_trade_date
+                    ,'nse_trade_date':str(company.nse_trade_date)[:19]
                     ,'nse_price_high':company.nse_price_high
                     ,'nse_price_low':company.nse_price_low
                     ,'nse_price_close':company.nse_price_close
@@ -796,13 +796,13 @@ def crud_index(request):
                     ,'min_ticker_date':str(first_ticker_date['date__min'])
                     ,'last_ticker_date':str(last_ticker_date['date__max'])
                     ,'total_prices':TickerData.count()
-                    ,'return_date':trans.return_date
+                    ,'return_date':str(trans.return_date)[:19]
                     ,'return_1d':trans.return_1d
                     ,'return_1m':trans.return_1m
                     ,'return_1y':trans.return_1y
                     ,'annualized_return':trans.annualized_return
                     ,'annualized_vol':trans.annualized_vol
-                    ,'trade_date':trans.trade_date
+                    ,'trade_date':str(trans.trade_date)[:19]
                     ,'price_high':trans.price_high
                     ,'price_low':trans.price_low
                     ,'price_close':trans.price_close

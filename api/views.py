@@ -365,9 +365,14 @@ def read_company(request):
     filters['sort_by'] = [
                         {'value':'name','label':'Name'},
                         {'value':'isin_no','label':'ISIN Number'},
-                        {'value':'nse_ticker','label':'Company NSE Code'}
-                       ]
-                
+                        {'value':'nse_ticker','label':'Company NSE Code'},
+                        {'value':'nse_return_1d','label':'1 Day NSE Return'},
+                        {'value':'nse_return_1m','label':'1 Month NSE Return'},
+                        {'value':'nse_return_1y','label':'1 Year NSE Return'},
+                        {'value':'nse_annualized_return','label':'Averate Annualize NSE Return'},
+                        {'value':'nse_annualized_vol','label':'Volatility NSE Return'},
+                        {'value':'nse_volume','label':'Volume Traded NSE'}
+                        ]   
 
     filters['order_by'] = [{'value':'asc','label':'Ascending'},
                            {'value':'desc','label':'Descending'}]

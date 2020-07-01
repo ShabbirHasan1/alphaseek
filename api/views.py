@@ -938,13 +938,7 @@ def crud_index_prices(request):
             result['prices']={}
             result['prices'] = []
             tranObjs = tranObjs.order_by('date')
-            # date_list = list(map(lambda x : str(x.date)[:19],tranObjs))
-            prices_index = list(map(lambda x : round(x.price_close,2),tranObjs))
-            # total_dates = len(date_list)
-            # df_final = pd.DataFrame({'Date':date_list,'Price':prices_index}, columns = ['Date','Price'])
-
             for trans in tranObjs:       
-                # if trans.exchange.exchange_code == "NSE":     
                 result['prices'].append({
                     'date':str(trans.date)[:19]
                     ,'Price':round(trans.price_close,2)
@@ -957,9 +951,6 @@ def crud_index_prices(request):
         error_message_list.append(check_operation['errormessage'])
 
     obj['result'] = result
-    # obj['filter'] = filters
-    # obj['num_pages'] = num_pages
-    # obj['total_records'] = total_records
     obj['message'] = message
     obj['status'] = status
     obj['error'] = error

@@ -67,26 +67,26 @@ class Company(BaseModel):
 
 
 class Index(BaseModel):
-    name               = models.CharField(max_length=300,db_index=True)
-    ticker             = models.CharField(max_length=50,null=True)
-    exchange           = models.ForeignKey(Exchange,
-                                    on_delete=models.CASCADE,
-                                    null = True,db_index=True)
-    return_date = models.DateField(null=True)                     
-    return_1d         = models.FloatField(default=0,null=True)
-    return_1m         = models.FloatField(default=0,null=True)
-    return_1y         = models.FloatField(default=0,null=True)
-    annualized_return = models.FloatField(default=0,null=True)
-    annualized_vol    = models.FloatField(default=0,null=True)
-    trade_date   = models.DateField(default=None,null=True)
-    price_high        = models.FloatField(default=0,null=True)
-    price_low         = models.FloatField(default=0,null=True)
-    price_close       = models.FloatField(default=0,null=True)
-    price_open        = models.FloatField(default=0,null=True)
-    price_close_adjusted = models.FloatField(default=0,null=True)
-    volume            = models.FloatField(default=0,null=True)
-    price_update_date = models.DateField(null=True)
-    return_update_date = models.DateField(null=True)
+    name                  = models.CharField(max_length=300,db_index=True)
+    ticker                = models.CharField(max_length=50,null=True)
+    exchange              = models.ForeignKey(Exchange,
+                                       on_delete=models.CASCADE,
+                                       null = True,db_index=True)
+    return_date           = models.DateField(null=True)                     
+    return_1d             = models.FloatField(default=0,null=True)
+    return_1m             = models.FloatField(default=0,null=True)
+    return_1y             = models.FloatField(default=0,null=True)
+    annualized_return     = models.FloatField(default=0,null=True)
+    annualized_vol        = models.FloatField(default=0,null=True)
+    trade_date            = models.DateField(default=None,null=True)
+    price_high            = models.FloatField(default=0,null=True)
+    price_low             = models.FloatField(default=0,null=True)
+    price_close           = models.FloatField(default=0,null=True)
+    price_open            = models.FloatField(default=0,null=True)
+    price_close_adjusted  = models.FloatField(default=0,null=True)
+    volume                = models.FloatField(default=0,null=True)
+    price_update_date     = models.DateField(null=True)
+    return_update_date    = models.DateField(null=True)
     
 
 class IndexHistoricDay(BaseModel):

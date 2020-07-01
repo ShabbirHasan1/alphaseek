@@ -492,8 +492,6 @@ def read_company_prices(request):
     num_pages = 1
     total_records = 0 
     tranObjs = TickerHistoricDay.objects.none()
-    # page_num = get_param(request, 'page_num', "1")
-    # page_size = get_param(request, 'page_size', "10000")
 
     sort_by = get_param(request,'sort_by',None) 
     order = get_param(request,'order_by',None)    
@@ -511,27 +509,8 @@ def read_company_prices(request):
         no_parameter = 1
         tranObjs = TickerHistoricDay.objects.none()
 
-        # Filters/Sorting Start
-        # if search !=None and search !="":
-        #     tranObjs = tranObjs.filter(Q(name__icontains=search) | Q(nse_ticker__icontains=search))
-        if sort_by !=None and sort_by !="" and sort_by != "none":
-            if order == "asc":
-                tranObjs = tranObjs.order_by(sort_by)
-            else:
-                tranObjs = tranObjs.order_by("-" + sort_by)
-        # Filters/Sorting End
-    # pagination variable
-
     total_records = tranObjs.count()    
-    # if page_num != None and page_num != "":
-    #     page_num = int(page_num)
-    #     tranObjs = Paginator(tranObjs, int(page_size))
-    #     try:
-    #         tranObjs = tranObjs.page(page_num)
-    #     except:
-    #         tranObjs = tranObjs
-    #     num_pages = int(math.ceil(total_records / float(int(page_size))))
-    # data = list(tranObjs)
+
     if no_parameter == 1:
         message = "No parameter shared"
     else:
@@ -563,7 +542,7 @@ def crud_company_prices(request):
     result = {}
     message = "Request Recieved"
     filters = {}
-    tranObjs = Exchange.objects.none()
+    tranObjs = TickerHistoricDay.objects.none()
     operation = get_param(request, 'operation', None)
     error = False
     error_message_list = []
@@ -831,6 +810,169 @@ def crud_index(request):
     obj['filter'] = filters
     obj['num_pages'] = num_pages
     obj['total_records'] = total_records
+    obj['message'] = message
+    obj['status'] = status
+    obj['error'] = error
+    obj['error_list'] = error_message_list
+    return HttpResponse(json.dumps(obj), content_type='application/json')
+
+def read_index_prices(request):
+    error = False
+    success = False
+    error_message_list = []
+    message = "Request Recieved!"
+    filters = {}
+    num_pages = 1
+    total_records = 0 
+    tranObjs = IndexHistoricDay.objects.none()
+    data_id = get_param(request,'data_id',None)
+    ticker = get_param(request,'ticker',None)
+    # isin = get_param(request,'isin',None)
+    no_parameter = 0
+    if data_id != None and data_id != "":
+        tranObjs = IndexHistoricDay.objects.filter(index__id=data_id)
+    elif ticker != None and ticker != "":
+        tranObjs = IndexHistoricDay.objects.filter(index__ticker=ticker)
+    else:
+        no_parameter = 1
+        tranObjs = IndexHistoricDay.objects.none()
+
+    total_records = tranObjs.count()    
+
+    if no_parameter == 1:
+        message = "No parameter shared"
+    else:
+        message  = "Success!"
+    success = True
+    
+    filters['sort_by'] = [
+                        {'value':'date','label':'Date'},
+                       ]
+                
+
+    filters['order_by'] = [{'value':'asc','label':'Ascending'},
+                           {'value':'desc','label':'Descending'}]
+
+    return({
+        'output':tranObjs,
+        'num_pages':num_pages,
+        'total_records':total_records,
+        'error':error,
+        'error_message_list':error_message_list,
+        'filter':filters,
+        'message':message,
+        'success':success
+    })
+
+def crud_index_prices(request):
+    obj = {}
+    status = False
+    result = {}
+    message = "Request Recieved"
+    filters = {}
+    tranObjs = Exchange.objects.none()
+    operation = get_param(request, 'operation', None)
+    error = False
+    error_message_list = []
+    num_pages = 1
+    total_records = 0 
+    
+    check_operation = listvar_check(variable_name='operation',value=operation,allowedlist=operations_allowed_default)
+    if not check_operation['error']:
+        if operation == "read":
+            pass
+            out_read = read_index_prices(request) 
+            message = out_read['message']               
+            tranObjs = out_read['output']
+            error_message_list.extend(out_read['error_message_list'])               
+            error = out_read['error']     
+            status = out_read['success']     
+            num_pages     = out_read['num_pages']          
+            filters       = out_read['filter']     
+            total_records = out_read['total_records']          
+
+        if operation in ["create","update"]:
+            pass
+            # out_create_update_exchange = create_update_exchange(request) 
+            # message = out_create_update_exchange['message']               
+            # tranObjs = out_create_update_exchange['output']
+            # error_message_list.extend(out_create_update_exchange['error_message_list'])               
+            # error = out_create_update_exchange['error']   
+            # status = out_create_update_exchange['success']          
+
+        if operation == "delete":
+            pass
+            # out_delete_exchange = delete_exchange(request) 
+            # message = out_delete_exchange['message']               
+            # tranObjs = out_delete_exchange['output']               
+            # error_message_list.extend(out_delete_exchange['error_message_list'])               
+            # error = out_delete_exchange['error']     
+            # status = out_delete_exchange['success']           
+
+        if not error:
+            index = tranObjs[0].index
+            
+            result['index'] = {
+                    'id':index.id
+                    ,'name': index.name
+                    ,'ticker': index.ticker
+                    ,'exchange':index.exchange__exchange_code
+                    ,'created_at':str(index.created_at)[:19]
+                    ,'modified_at':str(index.modified_at)[:19]
+                    ,'return_date':str(index.return_date)[:19]
+                    ,'return_1d':index.return_1d
+                    ,'return_1m':index.return_1m
+                    ,'return_1y':index.return_1y
+                    ,'annualized_return':index.annualized_return
+                    ,'annualized_vol':index.annualized_vol
+                    ,'trade_date':str(index.trade_date)[:19]
+                    ,'price_high':index.price_high
+                    ,'price_low':index.price_low
+                    ,'price_close':index.price_close
+                    ,'price_open':index.price_open
+                    ,'price_close_adjusted':index.price_close_adjusted
+                    ,'volume':index.volume
+                    ,'price_update_date':str(index.price_update_date)[:19]
+                    ,'return_update_date':str(index.return_update_date)[:19]
+                    }
+            result['prices']={}
+            result['prices'] = []
+            # outdata = serializers.serialize('python', tranObjs)
+            # outdata_sorted = json.dumps([d['fields'] for d in outdata])
+            # result['prices']['nse'] = json.loads(outdata_sorted)
+            tranObjs = tranObjs.order_by('date')
+            date_list = list(map(lambda x : str(x.date)[:19],tranObjs))
+            # date_list = list(dict.fromkeys(date_list))
+            prices_index = list(map(lambda x : round(x.price_close,2),tranObjs))
+            total_dates = len(date_list)
+            # df_final  = pd.DataFrame({'Date':date_list}, columns = ['Date'])
+            df_final = pd.DataFrame({'Date':date_list,'Price':prices_index}, columns = ['Date','Price'])
+            # sub_nse_data = tranObjs.filter(exchange__exchange_code = "NSE")
+            # dates_nse = list(map(lambda x : str(x.date)[:19],sub_nse_data))
+            # prices_nse = list(map(lambda x : round(x.price_close,2),sub_nse_data))
+            # db_nse = pd.DataFrame({'Date':dates_nse,'Price NSE':prices_nse}, columns = ['Date','Price NSE'])
+            # df_final = pd.merge(df_final,
+            #                             db_nse[['Date', 'Price NSE']],
+            #                             on='Date', 
+            #                             how='left')
+
+            for i in range(total_dates):       
+                # if trans.exchange.exchange_code == "NSE":     
+                result['prices'].append({
+                    'date':df_final['Date'][i],
+                    'Price':df_final['Price'][i]
+                })
+
+    
+    else:
+        error = check_operation['error']
+        message = "Operation Not Specified"
+        error_message_list.append(check_operation['errormessage'])
+
+    obj['result'] = result
+    # obj['filter'] = filters
+    # obj['num_pages'] = num_pages
+    # obj['total_records'] = total_records
     obj['message'] = message
     obj['status'] = status
     obj['error'] = error

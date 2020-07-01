@@ -23,6 +23,7 @@ urlpatterns = [
     url(r'crud_exchange/', views.crud_exchange, name='crud_exchange'),
     url(r'crud_company/', views.crud_company, name='crud_company'),
     url(r'crud_company_prices/', views.crud_company_prices, name='crud_company_prices'),
+    url(r'crud_index_prices/', views.crud_index_prices, name='crud_index_prices'),
     url(r'crud_index/', views.crud_index, name='crud_index'),
 ]
 

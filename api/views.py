@@ -3,6 +3,7 @@ from django.http import HttpResponseRedirect,HttpResponseForbidden,HttpResponse
 from django.core.paginator import Paginator
 from django.core import serializers
 from datascrape.models import *
+from strategytest.models import *
 from django.db.models import Q, Max, Min
 from overall.views import get_param,cleanstring,booleanvar_check, listvar_check, intvar_check, floatvar_check
 import json
@@ -967,7 +968,7 @@ def read_strategies(request):
     filters = {}
     num_pages = 1
     total_records = 0 
-    tranObjs = Company.objects.none()
+    tranObjs = StrategyDetails.objects.none()
     page_num = get_param(request, 'page_num', "1")
     page_size = get_param(request, 'page_size', "10")
     search = get_param(request,'search',None) 
@@ -976,9 +977,9 @@ def read_strategies(request):
     data_id = get_param(request,'data_id',None)
 
     if data_id != None and data_id != "":
-        tranObjs = Company.objects.filter(id=data_id)
+        tranObjs = StrategyDetails.objects.filter(id=data_id)
     else:
-        tranObjs = Company.objects.all()
+        tranObjs = StrategyDetails.objects.all()
 
         # Filters/Sorting Start
         if search !=None and search !="":

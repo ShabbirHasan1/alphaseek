@@ -937,30 +937,17 @@ def crud_index_prices(request):
                     }
             result['prices']={}
             result['prices'] = []
-            # outdata = serializers.serialize('python', tranObjs)
-            # outdata_sorted = json.dumps([d['fields'] for d in outdata])
-            # result['prices']['nse'] = json.loads(outdata_sorted)
             tranObjs = tranObjs.order_by('date')
-            date_list = list(map(lambda x : str(x.date)[:19],tranObjs))
-            # date_list = list(dict.fromkeys(date_list))
+            # date_list = list(map(lambda x : str(x.date)[:19],tranObjs))
             prices_index = list(map(lambda x : round(x.price_close,2),tranObjs))
-            total_dates = len(date_list)
-            # df_final  = pd.DataFrame({'Date':date_list}, columns = ['Date'])
-            df_final = pd.DataFrame({'Date':date_list,'Price':prices_index}, columns = ['Date','Price'])
-            # sub_nse_data = tranObjs.filter(exchange__exchange_code = "NSE")
-            # dates_nse = list(map(lambda x : str(x.date)[:19],sub_nse_data))
-            # prices_nse = list(map(lambda x : round(x.price_close,2),sub_nse_data))
-            # db_nse = pd.DataFrame({'Date':dates_nse,'Price NSE':prices_nse}, columns = ['Date','Price NSE'])
-            # df_final = pd.merge(df_final,
-            #                             db_nse[['Date', 'Price NSE']],
-            #                             on='Date', 
-            #                             how='left')
+            # total_dates = len(date_list)
+            # df_final = pd.DataFrame({'Date':date_list,'Price':prices_index}, columns = ['Date','Price'])
 
-            for i in range(total_dates):       
+            for trans in tranObjs:       
                 # if trans.exchange.exchange_code == "NSE":     
                 result['prices'].append({
-                    'date':df_final['Date'][i],
-                    'Price':df_final['Price'][i]
+                    'date':str(trans.date)[:19]
+                    ,'Price':round(trans.price_close,2)
                 })
 
     

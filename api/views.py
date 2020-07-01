@@ -916,7 +916,7 @@ def crud_index_prices(request):
                     'id':index.id
                     ,'name': index.name
                     ,'ticker': index.ticker
-                    ,'exchange':index.exchange__exchange_code
+                    ,'exchange':index.exchange.exchange_code
                     ,'created_at':str(index.created_at)[:19]
                     ,'modified_at':str(index.modified_at)[:19]
                     ,'return_date':str(index.return_date)[:19]

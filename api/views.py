@@ -983,7 +983,7 @@ def read_strategies(request):
 
         # Filters/Sorting Start
         if search !=None and search !="":
-            tranObjs = tranObjs.filter(Q(name__icontains=search) | Q(nse_ticker__icontains=search))
+            tranObjs = tranObjs.filter(Q(name__icontains=search) | Q(description__icontains=search))
 
         if sort_by !=None and sort_by !="" and sort_by != "none":
             if order == "asc":

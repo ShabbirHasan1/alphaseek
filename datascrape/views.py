@@ -106,7 +106,7 @@ class IndexClass():
         
         indexasset = Index.objects.filter(ticker=index_code.upper())
         # exchange = Exchange.objects.filter(exchange_code=exchange_code)[0]
-        yesterday = date.today() -  timedelta(days=1)
+        # yesterday = date.today() -  timedelta(days=1)
         period_run = True
     
         if indexasset.count() > 0:
@@ -130,7 +130,8 @@ class IndexClass():
                 total_len = len(index)
                 for i in range(total_len):
                     if date_check:
-                        if IndexHistoricDay.objects.filter(index = indexasset, date = index[i]).count() > 0 or index[i] > yesterday:
+                        # if IndexHistoricDay.objects.filter(index = indexasset, date = index[i]).count() > 0 or index[i] > yesterday:
+                        if IndexHistoricDay.objects.filter(index = indexasset, date = index[i]).count() > 0:
                             print(index_code + " passed " + str(index[i]))    
                         else:
                             tick = IndexHistoricDay.objects.create(
@@ -277,7 +278,7 @@ class NSEIndia:
         
         company = Company.objects.filter(nse_ticker=asset.upper())
         exchange = Exchange.objects.filter(exchange_code="NSE")[0]
-        yesterday = date.today() -  timedelta(days=1)
+        # yesterday = date.today() -  timedelta(days=1)
         period_run = True
         if company.count() > 0:
             company = company[0]
@@ -300,7 +301,8 @@ class NSEIndia:
                 total_len = len(index)
                 for i in range(total_len):
                     if date_check:
-                        if TickerHistoricDay.objects.filter(company = company,exchange=exchange,date = index[i]).count() > 0 or index[i] > yesterday:
+                        # if TickerHistoricDay.objects.filter(company = company,exchange=exchange,date = index[i]).count() > 0 or index[i] > yesterday:
+                        if TickerHistoricDay.objects.filter(company = company,exchange=exchange,date = index[i]).count() > 0:
                             print(asset + " passed " + str(index[i]))    
                             pass
                         else:

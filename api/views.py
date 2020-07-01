@@ -957,9 +957,96 @@ def crud_index_prices(request):
     obj['error_list'] = error_message_list
     return HttpResponse(json.dumps(obj), content_type='application/json')
 
+def read_strategies(request):
+    obj = {}
+    result = []
+    error = False
+    success = False
+    error_message_list = []
+    message = "Request Recieved!"
+    filters = {}
+    num_pages = 1
+    total_records = 0 
+    tranObjs = Company.objects.none()
+    page_num = get_param(request, 'page_num', "1")
+    page_size = get_param(request, 'page_size', "10")
+    search = get_param(request,'search',None) 
+    sort_by = get_param(request,'sort_by',None) 
+    order = get_param(request,'order_by',None)    
+    data_id = get_param(request,'data_id',None)
 
+    if data_id != None and data_id != "":
+        tranObjs = Company.objects.filter(id=data_id)
+    else:
+        tranObjs = Company.objects.all()
 
+        # Filters/Sorting Start
+        if search !=None and search !="":
+            tranObjs = tranObjs.filter(Q(name__icontains=search) | Q(nse_ticker__icontains=search))
 
+        if sort_by !=None and sort_by !="" and sort_by != "none":
+            if order == "asc":
+                tranObjs = tranObjs.order_by(sort_by)
+            else:
+                tranObjs = tranObjs.order_by("-" + sort_by)
+        # Filters/Sorting End
+    
+    # pagination variable
+
+    total_records = tranObjs.count()    
+    if page_num != None and page_num != "":
+        page_num = int(page_num)
+        tranObjs = Paginator(tranObjs, int(page_size))
+        try:
+            tranObjs = tranObjs.page(page_num)
+        except:
+            tranObjs = tranObjs
+        num_pages = int(math.ceil(total_records / float(int(page_size))))
+    # data = list(tranObjs)
+    message  = "Success!"
+    success = True
+    
+    filters['sort_by'] = [
+                        {'value':'name','label':'Name'},
+                        {'value':'alpha','label':'Alpha'},
+                        {'value':'beta','label':'Beta'},
+                        {'value':'sharpe_ratio','label':'Sharpe Ratio'},
+                        {'value':'average_return','label':'Average Return'},
+                        {'value':'max_drawdown','label':'Max Drawdown'},
+                        {'value':'volatility','label':'Volatility'},
+                        ]   
+
+    filters['order_by'] = [{'value':'asc','label':'Ascending'},
+                           {'value':'desc','label':'Descending'}]
+
+    
+    if not error:
+        for trans in tranObjs:
+            result.append({
+                'id':trans.id
+                ,'name': trans.name                
+                ,'description': trans.description         
+                ,'alpha': trans.alpha               
+                ,'alpha_significance': trans.alpha_significance  
+                ,'beta': trans.beta                
+                ,'beta_significance': trans.beta_significance   
+                ,'sharpe_ratio': trans.sharpe_ratio        
+                ,'average_return': trans.average_return      
+                ,'max_drawdown': trans.max_drawdown        
+                ,'volatility': trans.volatility          
+                ,'historic_start_date': str(trans.historic_start_date)[:19]
+                ,'historic_end_date': str(trans.historic_end_date)[:19]
+            })    
+
+    obj['result'] = result
+    obj['filter'] = filters
+    obj['num_pages'] = num_pages
+    obj['total_records'] = total_records
+    obj['message'] = message
+    obj['status'] = success
+    obj['error'] = error
+    obj['error_list'] = error_message_list
+    return HttpResponse(json.dumps(obj), content_type='application/json')
 
 
 

@@ -4,20 +4,18 @@ import json
 # Create your models here.
 
 class StrategyDetails(BaseModel):
-    name = models.CharField(max_length=300,db_index=True)
-    description  = models.CharField(max_length=500,null=True)
-    alpha = models.FloatField(null=True,default=None)
-    alpha_significance = models.FloatField(null=True,default=None)
-    beta = models.FloatField(null=True,default=None)
-    beta_significance = models.FloatField(null=True,default=None)
-
-    sharpe_ratio = models.FloatField(null=True) 
-    # total_return_strategy = models.FloatField(null=True) 
-    average_return = models.FloatField(null=True) 
-    max_drawdown    = models.FloatField(null=True)
-    volatility = models.FloatField(null=True) 
+    name                = models.CharField(max_length=300,db_index=True)
+    description         = models.CharField(max_length=500,null=True)
+    alpha               = models.FloatField(null=True,default=None)
+    alpha_significance  = models.FloatField(null=True,default=None)
+    beta                = models.FloatField(null=True,default=None)
+    beta_significance   = models.FloatField(null=True,default=None)
+    sharpe_ratio        = models.FloatField(null=True) 
+    average_return      = models.FloatField(null=True) 
+    max_drawdown        = models.FloatField(null=True)
+    volatility          = models.FloatField(null=True) 
     historic_start_date = models.DateField(null=True)
-    historic_end_date = models.DateField(null=True)
+    historic_end_date   = models.DateField(null=True)
 
     def __str__(self):
         return json.dumps({'id':self.id,'strategy_name':self.name})

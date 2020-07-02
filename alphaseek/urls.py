@@ -26,5 +26,6 @@ urlpatterns = [
     url(r'crud_index_prices/', views.crud_index_prices, name='crud_index_prices'),
     url(r'crud_index/', views.crud_index, name='crud_index'),
     url(r'read_strategies/', views.read_strategies, name='read_strategies'),
+    url(r'read_strategy_returns/', views.read_strategy_returns, name='read_strategy_returns'),
 ]
 

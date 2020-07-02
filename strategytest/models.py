@@ -40,6 +40,7 @@ class StrategyReturns(BaseModel):
                                 on_delete=models.CASCADE,
                                 null = True,db_index=True)
     date                = models.DateField()
+    
     return_strategy     = models.FloatField()
     high_water_mark     = models.FloatField(null=True,default=1.0)
     drawdown            = models.FloatField(null=True,default=0.0)

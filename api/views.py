@@ -1068,72 +1068,76 @@ def read_strategy_returns(request):
     if strategy_name != None and strategy_name != "":
         list_strategy = strategy_name.split(",")
         strategies = StrategyDetails.objects.filter(name__in = list_strategy)
-        for strategy in strategies:    
-            result['strategy'].append(
-                    {
-                    'id':strategy.id
-                    ,'name': strategy.name                
-                    ,'description': strategy.description         
-                    ,'alpha': strategy.alpha               
-                    ,'alpha_significance': strategy.alpha_significance  
-                    ,'beta': strategy.beta                
-                    ,'beta_significance': strategy.beta_significance   
-                    ,'sharpe_ratio': strategy.sharpe_ratio        
-                    ,'average_return': strategy.average_return      
-                    ,'max_drawdown': strategy.max_drawdown        
-                    ,'volatility': strategy.volatility          
-                    ,'historic_start_date': str(strategy.historic_start_date)[:19]
-                    ,'historic_end_date': str(strategy.historic_end_date)[:19]
-                    }
-                )
-            # result['prices'] =
+        if strategies.count() >0:
+            for strategy in strategies:    
+                result['strategy'].append(
+                        {
+                        'id':strategy.id
+                        ,'name': strategy.name                
+                        ,'description': strategy.description         
+                        ,'alpha': strategy.alpha               
+                        ,'alpha_significance': strategy.alpha_significance  
+                        ,'beta': strategy.beta                
+                        ,'beta_significance': strategy.beta_significance   
+                        ,'sharpe_ratio': strategy.sharpe_ratio        
+                        ,'average_return': strategy.average_return      
+                        ,'max_drawdown': strategy.max_drawdown        
+                        ,'volatility': strategy.volatility          
+                        ,'historic_start_date': str(strategy.historic_start_date)[:19]
+                        ,'historic_end_date': str(strategy.historic_end_date)[:19]
+                        }
+                    )
+                # result['prices'] =
 
-        transObjs = StrategyReturns.objects.filter(strategy__name__in = list_strategy).order_by('date')
-        date_list = list(map(lambda x : str(x.date)[:19],tranObjs))
-        date_list = list(dict.fromkeys(date_list))
-        total_dates = len(date_list)
-        df_final  = pd.DataFrame({'Date':date_list}, columns = ['Date'])
+            transObjs = StrategyReturns.objects.filter(strategy__name__in = list_strategy).order_by('date')
+            date_list = list(map(lambda x : str(x.date)[:19],tranObjs))
+            date_list = list(dict.fromkeys(date_list))
+            total_dates = len(date_list)
+            df_final  = pd.DataFrame({'Date':date_list}, columns = ['Date'])
 
-        for strategy in strategies:
-            sub_strat_data = tranObjs.filter(strategy = strategy)
-            dates_sub_strat = list(map(lambda x : str(x.date)[:19],sub_strat_data))
-            return_strategy = list(map(lambda x : round(x.return_strategy,2),sub_strat_data))  
-            high_water_mark  = list(map(lambda x : round(x.high_water_mark,2),sub_strat_data))   
-            drawdown      = list(map(lambda x : round(x.drawdown,2),sub_strat_data))      
-            cumulative_return   = list(map(lambda x : round(x.cumulative_return,2),sub_strat_data))
-            strategy_name = strategy.name
-            db_substrat = pd.DataFrame({'Date':dates_sub_strat,
-                                        ('Return - ' + strategy_name):return_strategy,
-                                        ('HWM - ' + strategy_name):high_water_mark,
-                                        ('Drawdown - ' + strategy_name):drawdown,
-                                        ('Cumulative - ' + strategy_name):cumulative_return,
-                                        }, columns = ['Date',
-                                        'Return - ' + strategy_name,
-                                        'HWM - ' + strategy_name,
-                                        'Drawdown - ' + strategy_name,
-                                        'Cumulative Ret. - ' + strategy_name
-                                        ]
-                                        )
-            df_final = pd.merge(df_final,
-                                        db_substrat['Date',
-                                        'Return - ' + strategy_name,
-                                        'HWM - ' + strategy_name,
-                                        'Drawdown - ' + strategy_name,
-                                        'Cumulative Ret. - ' + strategy_name
-                                        ],
-                                        on='Date', 
-                                        how='left')
+            for strategy in strategies:
+                sub_strat_data = tranObjs.filter(strategy = strategy)
+                dates_sub_strat = list(map(lambda x : str(x.date)[:19],sub_strat_data))
+                return_strategy = list(map(lambda x : round(x.return_strategy,2),sub_strat_data))  
+                high_water_mark  = list(map(lambda x : round(x.high_water_mark,2),sub_strat_data))   
+                drawdown      = list(map(lambda x : round(x.drawdown,2),sub_strat_data))      
+                cumulative_return   = list(map(lambda x : round(x.cumulative_return,2),sub_strat_data))
+                strategy_name = strategy.name
+                db_substrat = pd.DataFrame({'Date':dates_sub_strat,
+                                            ('Return - ' + strategy_name):return_strategy,
+                                            ('HWM - ' + strategy_name):high_water_mark,
+                                            ('Drawdown - ' + strategy_name):drawdown,
+                                            ('Cumulative - ' + strategy_name):cumulative_return,
+                                            }, columns = ['Date',
+                                            'Return - ' + strategy_name,
+                                            'HWM - ' + strategy_name,
+                                            'Drawdown - ' + strategy_name,
+                                            'Cumulative Ret. - ' + strategy_name
+                                            ]
+                                            )
+                df_final = pd.merge(df_final,
+                                            db_substrat['Date',
+                                            'Return - ' + strategy_name,
+                                            'HWM - ' + strategy_name,
+                                            'Drawdown - ' + strategy_name,
+                                            'Cumulative Ret. - ' + strategy_name
+                                            ],
+                                            on='Date', 
+                                            how='left')
 
-        column_list = list(df_final.columns)
+            column_list = list(df_final.columns)
 
-        for i in range(total_dates):       
-            prices_dict = {}
-            for col in column_list:
-                prices_dict[col] = df_final[col][i]
-            result['returns'].append(prices_dict)            
-            
-        message  = "Success!"
-        success = True
+            for i in range(total_dates):       
+                prices_dict = {}
+                for col in column_list:
+                    prices_dict[col] = df_final[col][i]
+                result['returns'].append(prices_dict)            
+                
+            message  = "Success!"
+            success = True
+        else:
+            error = True
+            message  = "Strategy Name Not Correct!"
     else:
         error = True
         message  = "Strategy Name Not Shared!"

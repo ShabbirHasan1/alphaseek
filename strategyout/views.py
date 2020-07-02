@@ -5,7 +5,7 @@ import random
 
 
 # Test Strategies for the code
-def random_1_asset():
+def random_1_asset(update=False):
     strategy = CheckStrategy.create_strategy(
         name="Random 1 Asset",
         description="Selecting any 1 random asset for the portfolio every month"
@@ -16,16 +16,19 @@ def random_1_asset():
     months = list(map(lambda x : x.date,all_monthly_returns))
     months = list(dict.fromkeys(months))
     total_months = len(months)
+    if not update:
+        StrategyPortfolio.objects.filter(strategy = strategy).delete()
+
     for i in range(0,total_months):
         portfolio_options = MonthlyReturn.objects.filter(date = months[i])
         asset_option = random.choice(portfolio_options)
         CheckStrategy.create_portfolio(strategy=strategy,company = asset_option.company, exchange = asset_option.exchange,date=months[i],weight=1)
 
 
-    CheckStrategy.calculate_strategy_returns(strategy=strategy)
+    CheckStrategy.calculate_strategy_returns(strategy=strategy,update=update)
     CheckStrategy.alpha_check(strategy=strategy)
 
-def random_2_asset():
+def random_2_asset(update = False):
     strategy = CheckStrategy.create_strategy(
         name="Random 2 Asset",
         description="Selecting any 2 random asset for the portfolio every month equi weighted or less depending on number of asset options" 
@@ -36,6 +39,9 @@ def random_2_asset():
     months = list(map(lambda x : x.date,all_monthly_returns))
     months = list(dict.fromkeys(months))
     total_months = len(months)
+    if not update:
+        StrategyPortfolio.objects.filter(strategy = strategy).delete()
+
     for i in range(0,total_months):
         portfolio_options = MonthlyReturn.objects.filter(date = months[i])
         if len(portfolio_options) == 1:
@@ -51,7 +57,7 @@ def random_2_asset():
             CheckStrategy.create_portfolio(strategy=strategy,company = second_random_asset.company, exchange = second_random_asset.exchange,date=months[i],weight=0.5)
 
 
-    CheckStrategy.calculate_strategy_returns(strategy=strategy)
+    CheckStrategy.calculate_strategy_returns(strategy=strategy,update=update)
     CheckStrategy.alpha_check(strategy=strategy)
 
 

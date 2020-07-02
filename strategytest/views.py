@@ -82,7 +82,7 @@ class CheckStrategy:
         output = StrategyReturns.objects.none()
         message = "Request Recieved"
         if not update:
-            StrategyReturns.objects.all().delete()
+            StrategyReturns.objects.filter(strategy = strategy).delete()
         try:
             portfolio_list = StrategyPortfolio.objects.filter(strategy = strategy).order_by('date')        
             date_list = list(map(lambda x : x.date,portfolio_list))

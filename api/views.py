@@ -1050,7 +1050,7 @@ def read_strategies(request):
     return HttpResponse(json.dumps(obj), content_type='application/json')
 
 
-def read_strategy_returns(request):
+def read_strategy_returns_multi(request):
     obj = {}
     result = {}
     error = False
@@ -1098,10 +1098,10 @@ def read_strategy_returns(request):
             for strategy in strategies:
                 sub_strat_data = StrategyReturns.objects.filter(strategy = strategy).order_by('date')
                 dates_sub_strat = list(map(lambda x : str(x.date)[:19],sub_strat_data))
-                return_strategy = list(map(lambda x : round(x.return_strategy,2),sub_strat_data))  
-                high_water_mark  = list(map(lambda x : round(x.high_water_mark,2),sub_strat_data))   
-                drawdown      = list(map(lambda x : round(x.drawdown,2),sub_strat_data))      
-                cumulative_return   = list(map(lambda x : round(x.cumulative_return,2),sub_strat_data))
+                return_strategy = list(map(lambda x : round(x.return_strategy,3),sub_strat_data))  
+                high_water_mark  = list(map(lambda x : round(x.high_water_mark,3),sub_strat_data))   
+                drawdown      = list(map(lambda x : round(x.drawdown,3),sub_strat_data))      
+                cumulative_return   = list(map(lambda x : round(x.cumulative_return,3),sub_strat_data))
                 strategy_name = strategy.name
                 column_name_return = 'Return - ' + strategy_name
                 column_name_hwm = 'HWM - ' + strategy_name
@@ -1136,6 +1136,83 @@ def read_strategy_returns(request):
                     print('3')
                 result['returns'].append(prices_dict)            
             
+            message  = "Success!"
+            success = True
+        else:
+            error = True
+            message  = "Strategy Name Not Correct!"
+    else:
+        error = True
+        message  = "Strategy Name Not Shared!"
+
+    obj['result'] = result
+    obj['filter'] = filters
+    obj['message'] = message
+    obj['status'] = success
+    obj['error'] = error
+    obj['error_list'] = error_message_list
+    return HttpResponse(json.dumps(obj), content_type='application/json')
+
+def read_strategy_returns(request):
+    obj = {}
+    result = {}
+    error = False
+    success = False
+    error_message_list = []
+    message = "Request Recieved!"
+    filters = {}
+    num_pages = 1
+    total_records = 0 
+    tranObjs = StrategyReturns.objects.none()
+    strategy_name = get_param(request,'strategy_name',None)
+    result['strategy'] = {}
+    result['returns'] = []
+
+    if strategy_name != None and strategy_name != "":
+        # list_strategy = strategy_name.split(",")
+        strategies = StrategyDetails.objects.filter(name = strategy_name)
+        if strategies.count() >0:
+            strategy = strategies[0]
+            # for strategy in strategies:    
+            result['strategy'] = {
+                    'id':strategy.id
+                    ,'name': strategy.name                
+                    ,'description': strategy.description         
+                    ,'alpha': strategy.alpha               
+                    ,'alpha_significance': strategy.alpha_significance  
+                    ,'beta': strategy.beta                
+                    ,'beta_significance': strategy.beta_significance   
+                    ,'sharpe_ratio': strategy.sharpe_ratio        
+                    ,'average_return': strategy.average_return      
+                    ,'max_drawdown': strategy.max_drawdown        
+                    ,'volatility': strategy.volatility          
+                    ,'historic_start_date': str(strategy.historic_start_date)[:19]
+                    ,'historic_end_date': str(strategy.historic_end_date)[:19]
+                    }
+                
+            sub_strat_data = StrategyReturns.objects.filter(strategy = strategy).order_by('date')
+            dates_sub_strat = list(map(lambda x : str(x.date)[:19],sub_strat_data))
+            return_strategy = list(map(lambda x : round(x.return_strategy,3),sub_strat_data))  
+            high_water_mark  = list(map(lambda x : round(x.high_water_mark,3),sub_strat_data))   
+            drawdown      = list(map(lambda x : round(x.drawdown,3),sub_strat_data))      
+            cumulative_return   = list(map(lambda x : round(x.cumulative_return,3),sub_strat_data))
+            strategy_name = strategy.name
+            column_list = ['Date','Return','HWM','Drawdown','Cum Return']
+            
+            data_dict =    {'Date':dates_sub_strat,
+                                        'Return':return_strategy,
+                                        'HWM':high_water_mark,
+                                        'Drawdown':drawdown,
+                                        'Cum Return':cumulative_return
+                            }
+            
+            df_final = pd.DataFrame(data_dict, columns = column_list)
+            total_dates = len(df_final)
+            for i in range(total_dates):       
+                prices_dict = {}
+                for col in column_list:
+                    prices_dict[col] = df_final[col][i]
+                result['returns'].append(prices_dict)            
             message  = "Success!"
             success = True
         else:

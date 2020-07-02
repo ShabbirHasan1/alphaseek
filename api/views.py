@@ -1168,7 +1168,7 @@ def read_strategy_returns(request):
     result['strategy'] = {}
     result['returns'] = []
 
-    all_strategies_list = list(map(lambda x : {'value':x.name,'label':x.name.upper()},StrategyDetails.objects.all()))
+    all_strategies_list = list(map(lambda x : { 'value':x.name,'label': x.name.upper() } ,StrategyDetails.objects.all()))
     filters['strategies'] = all_strategies_list
 
     if strategy_name != None and strategy_name != "":
@@ -1201,11 +1201,12 @@ def read_strategy_returns(request):
             strategy_name = strategy.name
             column_list = ['Date','Return','HWM','Drawdown','Cum Return']
             
-            data_dict =    {'Date':dates_sub_strat,
-                                        'Return':return_strategy,
-                                        'HWM':high_water_mark,
-                                        'Drawdown':drawdown,
-                                        'Cum Return':cumulative_return
+            data_dict =    {
+                            'Date':dates_sub_strat,
+                            'Return':return_strategy,
+                            'HWM':high_water_mark,
+                            'Drawdown':drawdown,
+                            'Cum Return':cumulative_return
                             }
             
             df_final = pd.DataFrame(data_dict, columns = column_list)

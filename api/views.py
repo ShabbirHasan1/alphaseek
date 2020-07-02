@@ -1063,7 +1063,7 @@ def read_strategy_returns_multi(request):
     tranObjs = StrategyReturns.objects.none()
     strategy_name = get_param(request,'strategy_name',None)
     result['strategy'] = []
-    result['returns'] = []
+    # result['returns'] = []
 
     if strategy_name != None and strategy_name != "":
         list_strategy = strategy_name.split(",")
@@ -1093,48 +1093,48 @@ def read_strategy_returns_multi(request):
             # date_list = list(map(lambda x : str(x.date)[:19],tranObjs))
             # date_list = list(dict.fromkeys(date_list))
             # total_dates = len(date_list)
-            df_final  = pd.DataFrame({'Date':[]}, columns = ['Date'])
-            print(df_final)
-            for strategy in strategies:
-                sub_strat_data = StrategyReturns.objects.filter(strategy = strategy).order_by('date')
-                dates_sub_strat = list(map(lambda x : str(x.date)[:19],sub_strat_data))
-                return_strategy = list(map(lambda x : round(x.return_strategy,3),sub_strat_data))  
-                high_water_mark  = list(map(lambda x : round(x.high_water_mark,3),sub_strat_data))   
-                drawdown      = list(map(lambda x : round(x.drawdown,3),sub_strat_data))      
-                cumulative_return   = list(map(lambda x : round(x.cumulative_return,3),sub_strat_data))
-                strategy_name = strategy.name
-                column_name_return = 'Return - ' + strategy_name
-                column_name_hwm = 'HWM - ' + strategy_name
-                column_name_drawdown = 'Drawdown - ' + strategy_name
-                column_name_cumreturn = 'Cumulative Ret. - ' + strategy_name                
-                column_list = ['Date',column_name_return,column_name_hwm,column_name_drawdown,column_name_cumreturn]
-                print(column_list)
-                data_dict =    {'Date':dates_sub_strat,
-                                            column_name_return:return_strategy,
-                                            column_name_hwm:high_water_mark,
-                                            column_name_drawdown:drawdown,
-                                            column_name_cumreturn:cumulative_return
-                                }
-                # print(data_dict)
-                db_substrat = pd.DataFrame(data_dict, columns = column_list)
-                print(db_substrat)
-                df_final = pd.merge(df_final,
-                                    db_substrat[['Date',column_name_return,column_name_hwm,column_name_drawdown,column_name_cumreturn]],
-                                    on='Date', 
-                                    how='outer')
-                print(df_final)
-            column_list = list(df_final.columns)
-            print(column_list)
-            total_dates = len(df_final)
-            for i in range(total_dates):       
-                prices_dict = {}
-                print('1')
-                for col in column_list:
-                    print('2')
-                    print(col)
-                    prices_dict[col] = df_final[col][i]
-                    print('3')
-                result['returns'].append(prices_dict)            
+            # df_final  = pd.DataFrame({'Date':[]}, columns = ['Date'])
+            # print(df_final)
+            # for strategy in strategies:
+            #     sub_strat_data = StrategyReturns.objects.filter(strategy = strategy).order_by('date')
+            #     dates_sub_strat = list(map(lambda x : str(x.date)[:19],sub_strat_data))
+            #     return_strategy = list(map(lambda x : round(x.return_strategy,3),sub_strat_data))  
+            #     high_water_mark  = list(map(lambda x : round(x.high_water_mark,3),sub_strat_data))   
+            #     drawdown      = list(map(lambda x : round(x.drawdown,3),sub_strat_data))      
+            #     cumulative_return   = list(map(lambda x : round(x.cumulative_return,3),sub_strat_data))
+            #     strategy_name = strategy.name
+            #     column_name_return = 'Return - ' + strategy_name
+            #     column_name_hwm = 'HWM - ' + strategy_name
+            #     column_name_drawdown = 'Drawdown - ' + strategy_name
+            #     column_name_cumreturn = 'Cumulative Ret. - ' + strategy_name                
+            #     column_list = ['Date',column_name_return,column_name_hwm,column_name_drawdown,column_name_cumreturn]
+            #     print(column_list)
+            #     data_dict =    {'Date':dates_sub_strat,
+            #                                 column_name_return:return_strategy,
+            #                                 column_name_hwm:high_water_mark,
+            #                                 column_name_drawdown:drawdown,
+            #                                 column_name_cumreturn:cumulative_return
+            #                     }
+            #     # print(data_dict)
+            #     db_substrat = pd.DataFrame(data_dict, columns = column_list)
+            #     print(db_substrat)
+            #     df_final = pd.merge(df_final,
+            #                         db_substrat[['Date',column_name_return,column_name_hwm,column_name_drawdown,column_name_cumreturn]],
+            #                         on='Date', 
+            #                         how='outer')
+            #     print(df_final)
+            # column_list = list(df_final.columns)
+            # print(column_list)
+            # total_dates = len(df_final)
+            # for i in range(total_dates):       
+            #     prices_dict = {}
+            #     print('1')
+            #     for col in column_list:
+            #         print('2')
+            #         print(col)
+            #         prices_dict[col] = df_final[col][i]
+            #         print('3')
+            #     result['returns'].append(prices_dict)            
             
             message  = "Success!"
             success = True
@@ -1168,14 +1168,15 @@ def read_strategy_returns(request):
     result['strategy'] = {}
     result['returns'] = []
 
+    all_strategies_list = list(map(lambda x : {'value':x.name,'label':x.name.upper()},StrategyDetails.objects.all()))
+    filters['strategies'] = all_strategies_list
+
     if strategy_name != None and strategy_name != "":
         # list_strategy = strategy_name.split(",")
         strategies = StrategyDetails.objects.filter(name = strategy_name)
         if strategies.count() >0:
             strategy = strategies[0]
-            # for strategy in strategies:    
-            result['strategy'] = {
-                    'id':strategy.id
+            strat_dict = {'id':strategy.id
                     ,'name': strategy.name                
                     ,'description': strategy.description         
                     ,'alpha': strategy.alpha               
@@ -1189,6 +1190,7 @@ def read_strategy_returns(request):
                     ,'historic_start_date': str(strategy.historic_start_date)[:19]
                     ,'historic_end_date': str(strategy.historic_end_date)[:19]
                     }
+            result['strategy'] = strat_dict
                 
             sub_strat_data = StrategyReturns.objects.filter(strategy = strategy).order_by('date')
             dates_sub_strat = list(map(lambda x : str(x.date)[:19],sub_strat_data))

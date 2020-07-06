@@ -89,7 +89,7 @@ def momentum_strategy(months = 6, pickup_percentile = 5, update = False):
                     print("Weight per asset:"  + str(weight_per_asset))
                     portfolio_selected = portfolio_options[:options_to_select]
                     for port in portfolio_selected:
-                        CheckStrategy.create_portfolio(strategy=strategy,company = port.company, exchange = port.exchange, date=months[i],weight=weight_per_asset)            
+                        CheckStrategy.create_portfolio(strategy=strategy,company = port.company, exchange = port.exchange, date=months[i],weight=float(weight_per_asset))            
                 else:
                     month_shift = month_shift + 1
         CheckStrategy.calculate_strategy_returns(strategy=strategy,update=update)

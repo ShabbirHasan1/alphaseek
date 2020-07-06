@@ -94,7 +94,7 @@ class CheckStrategy:
         for i in range(0,total_dates):   
             # print(i)
             portfolio = StrategyPortfolio.objects.filter(strategy=strategy, date = date_list[i])
-            df_overall = pd.DataFrame({'Date':[],'Return':[],'Weighted Return':[]}, columns = ['Date','Return'])
+            df_overall = pd.DataFrame({'Date':[],'Return':[],'Weighted Return':[]}, columns = ['Date','Return','Weighted Return'])
             if i != (total_dates - 1):
                 counter_p = 0 
                 for port in portfolio:
@@ -115,7 +115,7 @@ class CheckStrategy:
 
                         inds_x = np.where(np.isnan(df_new['Weighted Return']))
                         for x in inds_x[0]:
-                            df_new['Weighted Return'][x] = 0 
+                            df_new['Weighted Return'][x] = 0.0 
                             # print(df_new['Date'][x])
 
                         inds_x1 = np.where(np.isnan(df_new['Return']))

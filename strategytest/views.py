@@ -217,26 +217,26 @@ class CheckStrategy:
                     ,drawdown            = drawdown
                     ,cumulative_return   = port_return
                 )
-    # print(df_final)
-            volatility = df_final['Return'].std() * math.sqrt(245)
-            average_return = df_final['Return'].mean() * 245
-            sharpe_ratio = ((average_return - risk_free_rate)/volatility)
-            strategy.volatility = volatility 
-            strategy.average_return = average_return 
-            strategy.max_drawdown = max_drawdown
-            strategy.sharpe_ratio = sharpe_ratio
-            strategy.historic_start_date = df_final['Date'][0]
-            strategy.historic_end_date = df_final['Date'][total_len_df-1]
-            strategy.save()
-            message = "Portfolio Calculations Complete"
-            success = True
-            error = False
-            output = []
-        except:
-            message = "Calculation Failure"        
-            output = []
-            success = False
-            error = True
+
+        volatility = df_final['Return'].std() * math.sqrt(245)
+        average_return = df_final['Return'].mean() * 245
+        sharpe_ratio = ((average_return - risk_free_rate)/volatility)
+        strategy.volatility = volatility 
+        strategy.average_return = average_return 
+        strategy.max_drawdown = max_drawdown
+        strategy.sharpe_ratio = sharpe_ratio
+        strategy.historic_start_date = df_final['Date'][0]
+        strategy.historic_end_date = df_final['Date'][total_len_df-1]
+        strategy.save()
+        message = "Portfolio Calculations Complete"
+        success = True
+        error = False
+        output = []
+        # except:
+        #     message = "Calculation Failure"        
+        #     output = []
+        #     success = False
+        #     error = True
 
         # print("volatility:" +  str(volatility))
         # print("average_return:" +  str(average_return))

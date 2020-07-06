@@ -27,6 +27,7 @@ def random_1_asset(update=False):
 
     CheckStrategy.calculate_strategy_returns(strategy=strategy,update=update)
     CheckStrategy.alpha_check(strategy=strategy)
+    return "Strategy Created and Calculated"
 
 def random_2_asset(update = False):
     strategy = CheckStrategy.create_strategy(
@@ -59,5 +60,40 @@ def random_2_asset(update = False):
 
     CheckStrategy.calculate_strategy_returns(strategy=strategy,update=update)
     CheckStrategy.alpha_check(strategy=strategy)
+    return "Strategy Created and Calculated"
+
+def momentum_strategy(months = 6, pickup_percentile = 5, update = False):
+    if ((months <= 18) and (months > 0)):
+        strategy = CheckStrategy.create_strategy(
+            name="Momentum Strategy | Portfolio update frequency =" + months + " months",
+            description="Selecting top " + pickup_percentile + " percent assets for the portfolio every " + months + "months. Equi weighted distribution of assets. Long Only for the postions" 
+        )
+        strategy = strategy['output'][0]
+        # logic
+        all_monthly_returns = MonthlyReturn.objects.all().order_by('date')
+        months = list(map(lambda x : x.date,all_monthly_returns))
+        months = list(dict.fromkeys(months))
+        total_months = len(months)
+        if not update:
+            StrategyPortfolio.objects.filter(strategy = strategy).delete()
+
+        for i in range(0,total_months):
+            if ((i) % months):
+                portfolio_options = MonthlyReturn.objects.filter(date = months[i]).order_by("-return_" + months + "m")
+                total_options = portfolio_options.count()
+                options_to_select = round(total_options * pickup_percentile / 100 ,0)
+                weight_per_asset = (100/options_to_select)
+                portfolio_selected = portfolio_options[:options_to_select]
+                for port in portfolio_selected:
+                    CheckStrategy.create_portfolio(strategy=strategy,company = port.company, exchange = port.exchange, date=months[i],weight=weight_per_asset)            
+        
+        CheckStrategy.calculate_strategy_returns(strategy=strategy,update=update)
+        CheckStrategy.alpha_check(strategy=strategy)
+        return "Strategy Created and Calculated"
+
+    else:
+        return "Strategy not created, reduce the month range"
+
+
 
 

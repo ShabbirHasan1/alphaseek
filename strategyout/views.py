@@ -76,21 +76,22 @@ def momentum_strategy(months = 6, pickup_percentile = 5, update = False):
         total_months = len(months_list)
         if not update:
             StrategyPortfolio.objects.filter(strategy = strategy).delete()
-
+        month_shift = 0 
         for i in range(0,total_months):
-            if (i % months == 0 ):
+            if ((i-month_shift) % months == 0 ):
                 portfolio_options = MonthlyReturn.objects.filter(date = months_list[i]).order_by("-return_" + str(months) + "m")
-                
                 total_options = portfolio_options.count()
-                print("Options:"  + str(total_options))
-                options_to_select = round(total_options * pickup_percentile / 100 ,0)
-                print("Options to select:"  + str(options_to_select))
-                weight_per_asset = (1/options_to_select)
-                print("Weight per asset:"  + str(weight_per_asset))
-                portfolio_selected = portfolio_options[:options_to_select]
-                for port in portfolio_selected:
-                    CheckStrategy.create_portfolio(strategy=strategy,company = port.company, exchange = port.exchange, date=months[i],weight=weight_per_asset)            
-        
+                if total_options > 100:
+                    print("Options:"  + str(total_options))
+                    options_to_select = round(total_options * pickup_percentile / 100 ,0)
+                    print("Options to select:"  + str(options_to_select))
+                    weight_per_asset = (1/options_to_select)
+                    print("Weight per asset:"  + str(weight_per_asset))
+                    portfolio_selected = portfolio_options[:options_to_select]
+                    for port in portfolio_selected:
+                        CheckStrategy.create_portfolio(strategy=strategy,company = port.company, exchange = port.exchange, date=months[i],weight=weight_per_asset)            
+                else:
+                    month_shift = month_shift + 1
         CheckStrategy.calculate_strategy_returns(strategy=strategy,update=update)
         CheckStrategy.alpha_check(strategy=strategy)
         return "Strategy Created and Calculated"

@@ -80,9 +80,13 @@ def momentum_strategy(months = 6, pickup_percentile = 5, update = False):
         for i in range(0,total_months):
             if (i % months == 0 ):
                 portfolio_options = MonthlyReturn.objects.filter(date = months_list[i]).order_by("-return_" + str(months) + "m")
+                
                 total_options = portfolio_options.count()
+                print("Options:"  + str(total_options))
                 options_to_select = round(total_options * pickup_percentile / 100 ,0)
-                weight_per_asset = (100/options_to_select)
+                print("Options to select:"  + str(options_to_select))
+                weight_per_asset = (1/options_to_select)
+                print("Weight per asset:"  + str(weight_per_asset))
                 portfolio_selected = portfolio_options[:options_to_select]
                 for port in portfolio_selected:
                     CheckStrategy.create_portfolio(strategy=strategy,company = port.company, exchange = port.exchange, date=months[i],weight=weight_per_asset)            

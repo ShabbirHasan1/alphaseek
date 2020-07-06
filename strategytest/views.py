@@ -83,131 +83,122 @@ class CheckStrategy:
         message = "Request Recieved"
         if not update:
             StrategyReturns.objects.filter(strategy = strategy).delete()
-        try:
-            portfolio_list = StrategyPortfolio.objects.filter(strategy = strategy).order_by('date')        
-            date_list = list(map(lambda x : x.date,portfolio_list))
-            date_list = list(dict.fromkeys(date_list))
-            total_dates = len(date_list)
-            df_final = pd.DataFrame({'Date':[],'Return':[]}, columns = ['Date','Return'])
-            counter_d = 0 
-            # print(total_dates)
-            for i in range(0,total_dates):   
-                # print(i)
-                portfolio = StrategyPortfolio.objects.filter(strategy=strategy, date = date_list[i])
-                df_overall = pd.DataFrame({'Date':[],'Return':[],'Weighted Return':[]}, columns = ['Date','Return'])
-                if i != (total_dates - 1):
-                    counter_p = 0 
-                    for port in portfolio:
-                        df_port  = pd.DataFrame({'Date':[],'Return':[]}, columns = ['Date','Return'])
-                        daily_returns = DailyReturn.objects.filter(company=port.company, exchange = port.exchange, date__gt= date_list[i], date__lte = date_list[i+1])
-                        df_list = list(map(lambda x : {'Date':str(x.date),'Return':x.return_1d},daily_returns))
-                        df_port = df_port.append(df_list,ignore_index=True)
-                        df_port['Return'] = df_port['Return'] * port.weight
-                        if counter_p == 0 :
-                            df_overall = df_overall.append(df_port,ignore_index=True)
-                        else:
-                            df_port['Weighted Return'] = df_port['Return']
-                            
-                            df_new = pd.merge(df_overall,
-                                        df_port[['Date', 'Weighted Return']],
-                                        on='Date', 
-                                        how='outer')
-
-                            inds_x = np.where(np.isnan(df_new['Weighted Return']))
-                            for x in inds_x[0]:
-                                df_new['Weighted Return'][x] = 0 
-                                # print(df_new['Date'][x])
-
-                            inds_x1 = np.where(np.isnan(df_new['Return']))
-                            for x1 in inds_x1[0]:
-                                df_new['Return'][x1] = 0 
-                                # print(df_new['Date'][x])
-
-
-                            df_new['Return'] = df_new['Return'] + df_new['Weighted Return']
-                            # print(df_new)
-                            df_overall = df_new
-                            df_new = pd.DataFrame()
-                            # df_overall['Return'] = df_overall['Return'] + df_port['Return']
-                        counter_p = counter_p + 1
-                else:
-                    counter_p=0
-                    for port in portfolio:
-                        df_port  = pd.DataFrame({'Date':[],'Return':[]}, columns = ['Date','Return'])
-                        # returns = DailyReturn.objects.filter(company=port.company, exchange = port.exchange, date__gt= date_list[i])
-                        daily_returns = DailyReturn.objects.filter(company=port.company, exchange = port.exchange, date__gt= date_list[i])                    
-                        df_list = list(map(lambda x : {'Date':str(x.date),'Return':x.return_1d},daily_returns))
-                        df_port = df_port.append(df_list,ignore_index=True)
-                        df_port['Return'] = df_port['Return'] * port.weight
-                        if counter_p == 0 :
-                            df_overall = df_overall.append(df_port,ignore_index=True)
-                        else:
-                            df_port['Weighted Return'] = df_port['Return']
-                            df_new = pd.merge(df_overall,
-                                        df_port[['Date', 'Weighted Return']],
-                                        on='Date', 
-                                        how='outer')
-                            inds_x = np.where(np.isnan(df_new['Weighted Return']))
-                            for x in inds_x[0]:
-                                df_new['Weighted Return'][x] = 0 
-
-                            inds_x1 = np.where(np.isnan(df_new['Return']))
-                            for x1 in inds_x1[0]:
-                                df_new['Return'][x1] = 0 
-                                # print(df_new['Date'][x])
-
-
-                            df_new['Return'] = df_new['Return'] + df_new['Weighted Return']
-                            df_overall = df_new
-                            df_new = pd.DataFrame()
-                            # df_overall['Return'] = df_overall['Return'] + df_port['Return']
-
-                        counter_p = counter_p + 1
-
-                # print(df_port)
-                # print(df_overall)            
-                df_final = df_final.append(df_overall,ignore_index=True)
-                
-                # df_final = df_overall
-                
-            
-            df_final['HWM'] = 1.0
-            df_final['Drawdown'] = 0.0
-            df_final['Cumulative Return'] = 0.0
-            hwm = 1.0
-            port_return = 1.0
-            max_drawdown = 0.0
-            total_len_df = len(df_final)
-            # total_len_df = 30
-            df_final.sort_values(by='Date')
-            for k in range(total_len_df):
-                port_return = port_return * ( 1 + df_final['Return'][k])
-                # print(port_return)
-                hwm = max(hwm, port_return)
-                drawdown = hwm - port_return 
-                max_drawdown = max(max_drawdown,drawdown)
-                df_final['HWM'][k] = hwm
-                df_final['Drawdown'][k] = drawdown
-                df_final['Cumulative Return'][k] = port_return
-
-                if update:
-                    strategy_return = StrategyReturns.objects.filter(date = df_final['Date'][k],strategy=strategy).order_by('Date')                    
-                    if strategy_return.count() > 0:
-                        strategy_return = strategy_return[0]
-                        strategy_return.return_strategy = df_final['Return'][k]
-                        strategy_return.high_water_mark = hwm
-                        strategy_return.drawdown = drawdown
-                        strategy_return.cumulative_return = port_return
-                        strategy_return.save()
+    # try:
+        portfolio_list = StrategyPortfolio.objects.filter(strategy = strategy).order_by('date')        
+        date_list = list(map(lambda x : x.date,portfolio_list))
+        date_list = list(dict.fromkeys(date_list))
+        total_dates = len(date_list)
+        df_final = pd.DataFrame({'Date':[],'Return':[]}, columns = ['Date','Return'])
+        counter_d = 0 
+        # print(total_dates)
+        for i in range(0,total_dates):   
+            # print(i)
+            portfolio = StrategyPortfolio.objects.filter(strategy=strategy, date = date_list[i])
+            df_overall = pd.DataFrame({'Date':[],'Return':[],'Weighted Return':[]}, columns = ['Date','Return'])
+            if i != (total_dates - 1):
+                counter_p = 0 
+                for port in portfolio:
+                    df_port  = pd.DataFrame({'Date':[],'Return':[]}, columns = ['Date','Return'])
+                    daily_returns = DailyReturn.objects.filter(company=port.company, exchange = port.exchange, date__gt= date_list[i], date__lte = date_list[i+1])
+                    df_list = list(map(lambda x : {'Date':str(x.date),'Return':x.return_1d},daily_returns))
+                    df_port = df_port.append(df_list,ignore_index=True)
+                    df_port['Return'] = df_port['Return'] * port.weight
+                    if counter_p == 0 :
+                        df_overall = df_overall.append(df_port,ignore_index=True)
                     else:
-                        StrategyReturns.objects.create(
-                            strategy            = strategy
-                            ,date                = df_final['Date'][k]
-                            ,return_strategy     = df_final['Return'][k]
-                            ,high_water_mark     = hwm
-                            ,drawdown            = drawdown
-                            ,cumulative_return   = port_return
-                        )
+                        df_port['Weighted Return'] = df_port['Return']
+                        
+                        df_new = pd.merge(df_overall,
+                                    df_port[['Date', 'Weighted Return']],
+                                    on='Date', 
+                                    how='outer')
+
+                        inds_x = np.where(np.isnan(df_new['Weighted Return']))
+                        for x in inds_x[0]:
+                            df_new['Weighted Return'][x] = 0 
+                            # print(df_new['Date'][x])
+
+                        inds_x1 = np.where(np.isnan(df_new['Return']))
+                        for x1 in inds_x1[0]:
+                            df_new['Return'][x1] = 0 
+                            # print(df_new['Date'][x])
+
+
+                        df_new['Return'] = df_new['Return'] + df_new['Weighted Return']
+                        # print(df_new)
+                        df_overall = df_new
+                        df_new = pd.DataFrame()
+                        # df_overall['Return'] = df_overall['Return'] + df_port['Return']
+                    counter_p = counter_p + 1
+            else:
+                counter_p=0
+                for port in portfolio:
+                    df_port  = pd.DataFrame({'Date':[],'Return':[]}, columns = ['Date','Return'])
+                    # returns = DailyReturn.objects.filter(company=port.company, exchange = port.exchange, date__gt= date_list[i])
+                    daily_returns = DailyReturn.objects.filter(company=port.company, exchange = port.exchange, date__gt= date_list[i])                    
+                    df_list = list(map(lambda x : {'Date':str(x.date),'Return':x.return_1d},daily_returns))
+                    df_port = df_port.append(df_list,ignore_index=True)
+                    df_port['Return'] = df_port['Return'] * port.weight
+                    if counter_p == 0 :
+                        df_overall = df_overall.append(df_port,ignore_index=True)
+                    else:
+                        df_port['Weighted Return'] = df_port['Return']
+                        df_new = pd.merge(df_overall,
+                                    df_port[['Date', 'Weighted Return']],
+                                    on='Date', 
+                                    how='outer')
+                        inds_x = np.where(np.isnan(df_new['Weighted Return']))
+                        for x in inds_x[0]:
+                            df_new['Weighted Return'][x] = 0 
+
+                        inds_x1 = np.where(np.isnan(df_new['Return']))
+                        for x1 in inds_x1[0]:
+                            df_new['Return'][x1] = 0 
+                            # print(df_new['Date'][x])
+
+
+                        df_new['Return'] = df_new['Return'] + df_new['Weighted Return']
+                        df_overall = df_new
+                        df_new = pd.DataFrame()
+                        # df_overall['Return'] = df_overall['Return'] + df_port['Return']
+
+                    counter_p = counter_p + 1
+
+            # print(df_port)
+            # print(df_overall)            
+            df_final = df_final.append(df_overall,ignore_index=True)
+            
+            # df_final = df_overall
+            
+        
+        df_final['HWM'] = 1.0
+        df_final['Drawdown'] = 0.0
+        df_final['Cumulative Return'] = 0.0
+        hwm = 1.0
+        port_return = 1.0
+        max_drawdown = 0.0
+        total_len_df = len(df_final)
+        # total_len_df = 30
+        df_final.sort_values(by='Date')
+        for k in range(total_len_df):
+            port_return = port_return * ( 1 + df_final['Return'][k])
+            # print(port_return)
+            hwm = max(hwm, port_return)
+            drawdown = hwm - port_return 
+            max_drawdown = max(max_drawdown,drawdown)
+            df_final['HWM'][k] = hwm
+            df_final['Drawdown'][k] = drawdown
+            df_final['Cumulative Return'][k] = port_return
+
+            if update:
+                strategy_return = StrategyReturns.objects.filter(date = df_final['Date'][k],strategy=strategy).order_by('Date')                    
+                if strategy_return.count() > 0:
+                    strategy_return = strategy_return[0]
+                    strategy_return.return_strategy = df_final['Return'][k]
+                    strategy_return.high_water_mark = hwm
+                    strategy_return.drawdown = drawdown
+                    strategy_return.cumulative_return = port_return
+                    strategy_return.save()
                 else:
                     StrategyReturns.objects.create(
                         strategy            = strategy
@@ -217,7 +208,16 @@ class CheckStrategy:
                         ,drawdown            = drawdown
                         ,cumulative_return   = port_return
                     )
-        # print(df_final)
+            else:
+                StrategyReturns.objects.create(
+                    strategy            = strategy
+                    ,date                = df_final['Date'][k]
+                    ,return_strategy     = df_final['Return'][k]
+                    ,high_water_mark     = hwm
+                    ,drawdown            = drawdown
+                    ,cumulative_return   = port_return
+                )
+    # print(df_final)
             volatility = df_final['Return'].std() * math.sqrt(245)
             average_return = df_final['Return'].mean() * 245
             sharpe_ratio = ((average_return - risk_free_rate)/volatility)

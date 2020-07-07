@@ -191,6 +191,7 @@ class CheckStrategy:
         max_drawdown = 0.0
         total_len_df = len(df_final)
         # total_len_df = 30
+        df_final["Date"] = pd.to_datetime(df_final["Date"])
         df_final = df_final.sort_values(by='Date')
         for k in range(total_len_df):
             port_return = port_return * ( 1.0 + df_final['Return'][k])

@@ -203,7 +203,7 @@ class CheckStrategy:
             df_final['HWM'][k] = hwm
             df_final['Drawdown'][k] = drawdown
             df_final['Cumulative Return'][k] = port_return
-            print(df_final.iloc[[k]])
+            # print(df_final.iloc[[k]])
 
             if update:
                 strategy_return = StrategyReturns.objects.filter(date = df_final['Date'][k],strategy=strategy).order_by('Date')                    

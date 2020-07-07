@@ -79,9 +79,9 @@ def momentum_strategy(months = 6, pickup_percentile = 5, update = False):
         month_shift = 0 
         for i in range(0,total_months):
             if ((i-month_shift) % months == 0 ):
-                portfolio_options = MonthlyReturn.objects.filter(date = months_list[i]).order_by("-return_" + str(months) + "m")
+                portfolio_options = MonthlyReturn.objects.filter(date = months_list[i]).order_by("return_" + str(months) + "m")
                 total_options = portfolio_options.count()
-                if total_options >= 50:
+                if total_options >= 100:
                     print(months_list[i])
                     print("Options:"  + str(total_options))
                     options_to_select = (round(total_options * pickup_percentile / 100 ,0) + 1)

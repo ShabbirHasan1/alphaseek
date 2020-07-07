@@ -62,11 +62,11 @@ def random_2_asset(update = False):
     CheckStrategy.alpha_check(strategy=strategy)
     return "Strategy Created and Calculated"
 
-def momentum_strategy(frequency=1, return_months = 6, pickup_percentile = 5, update = False):
+def momentum_strategy(frequency=1, return_months = 6, num_stocks = 30, update = False):
     if ((return_months <= 18) and (return_months > 0)):
         strategy = CheckStrategy.create_strategy(
-            name="Long only momentum strategy; Portfolio update frequency :" + str(frequency) + " months" + ";return check = "+ str(return_months)+"; percentile pickup : "+ str(pickup_percentile)+ "%",
-            description="Selecting top " + str(pickup_percentile) + " percent assets for the portfolio every " + str(frequency) + "months. " + ";return check = "+ str(return_months)+ "; Equi weighted distribution of assets. Long Only for the postions" 
+            name="Long only momentum strategy; Portfolio update frequency :" + str(frequency) + " months" + ";return check = "+ str(return_months)+"; num stocks pickup : "+ str(pickup_percentile)+ "%",
+            description="Selecting top " + str(pickup_percentile) + " assets for the portfolio every " + str(frequency) + "months. " + ";return check = "+ str(return_months)+ "; Equi weighted distribution of assets. Long Only for the postions" 
         )
         strategy = strategy['output'][0]
         # logic
@@ -82,10 +82,10 @@ def momentum_strategy(frequency=1, return_months = 6, pickup_percentile = 5, upd
                 portfolio_options = MonthlyReturn.objects.filter(date = months_list[i]).order_by("-return_" + str(return_months) + "m")
                 total_options = portfolio_options.count()
                 if total_options >= 100:
-                    options_to_select = (round(total_options * pickup_percentile / 100 ,0) + 1)
-                    weight_per_asset = (1/options_to_select)
-                    print(months_list[i],total_options,options_to_select,weight_per_asset)
-                    portfolio_selected = portfolio_options[:options_to_select]
+                    # options_to_select = (round(total_options * pickup_percentile / 100 ,0) + 1)
+                    weight_per_asset = (1/num_stocks)
+                    print(months_list[i],total_options,num_stocks,weight_per_asset)
+                    portfolio_selected = portfolio_options[:(num_stocks-1)]
                     for port in portfolio_selected:
                         CheckStrategy.create_portfolio(strategy=strategy,company = port.company, exchange = port.exchange, date=months_list[i],weight=float(weight_per_asset))            
                 else:

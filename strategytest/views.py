@@ -107,7 +107,7 @@ class CheckStrategy:
                         df_overall = df_overall.append(df_port,ignore_index=True)
                     else:
                         # df_port['Weighted Return'] = df_port['Return']
-                        df_port.rename(columns={'Return':'Weighted Return'})
+                        df_port = df_port.rename(columns={'Date':'Date','Return':'Weighted Return'})
 
                         
                         df_new = pd.merge(df_overall,
@@ -147,7 +147,7 @@ class CheckStrategy:
                         df_overall = df_overall.append(df_port,ignore_index=True)
                     else:
                         # df_port['Weighted Return'] = df_port['Return']
-                        df_port.rename(columns={'Return':'Weighted Return'})
+                        df_port = df_port.rename(columns={'Date':'Date','Return':'Weighted Return'})
                         df_new = pd.merge(df_overall,
                                     df_port[['Date', 'Weighted Return']],
                                     on='Date', 

@@ -120,10 +120,10 @@ class CheckStrategy:
                         # for x in inds_x[0]:
                         #     df_new['Weighted Return'][x] = 0.0 
                         # try:
-                        print(df_new)
+                        # print(df_new)
                         df_new['Weighted Return'] = df_new['Weighted Return'].fillna(0)
                         # except:
-                        print(df_new)
+                        # print(df_new)
 
                         df_new['Return'] = df_new['Return'].fillna(0)
 
@@ -135,9 +135,9 @@ class CheckStrategy:
 
                         df_new['Return'] = df_new['Return'] + df_new['Weighted Return']
                         # print(df_new)
-                        df_overall = df_new
+                        df_overall = df_new.drop(columns='Weighted Return')
                         df_new = pd.DataFrame()
-                        print(df_new)
+                        # print(df_new)
                         # df_overall['Return'] = df_overall['Return'] + df_port['Return']
                     counter_p = counter_p + 1
             else:
@@ -170,7 +170,7 @@ class CheckStrategy:
                         df_new['Return'] = df_new['Return'].fillna(0)
 
                         df_new['Return'] = df_new['Return'] + df_new['Weighted Return']
-                        df_overall = df_new
+                        df_overall = df_new.drop(columns='Weighted Return')
                         df_new = pd.DataFrame()
                         # df_overall['Return'] = df_overall['Return'] + df_port['Return']
 

@@ -108,19 +108,23 @@ class CheckStrategy:
                     else:
                         df_port['Weighted Return'] = df_port['Return']
                         
+
+                        
                         df_new = pd.merge(df_overall,
                                     df_port[['Date', 'Weighted Return']],
                                     on='Date', 
                                     how='outer')
 
-                        inds_x = np.where(np.isnan(df_new['Weighted Return']))
-                        for x in inds_x[0]:
-                            df_new['Weighted Return'][x] = 0.0 
-                            # print(df_new['Date'][x])
+                        # inds_x = np.where(np.isnan(df_new['Weighted Return']))
+                        # print(inds_x)
+                        # for x in inds_x[0]:
+                        #     df_new['Weighted Return'][x] = 0.0 
+                        df_new['Weighted Return'] = df_new['Weighted Return'].fillna(0)
+                        df_new['Return'] = df_new['Return'].fillna(0)
 
-                        inds_x1 = np.where(np.isnan(df_new['Return']))
-                        for x1 in inds_x1[0]:
-                            df_new['Return'][x1] = 0 
+                        # inds_x1 = np.where(np.isnan(df_new['Return']))
+                        # for x1 in inds_x1[0]:
+                        #     df_new['Return'][x1] = 0 
                             # print(df_new['Date'][x])
 
 
@@ -147,15 +151,16 @@ class CheckStrategy:
                                     df_port[['Date', 'Weighted Return']],
                                     on='Date', 
                                     how='outer')
-                        inds_x = np.where(np.isnan(df_new['Weighted Return']))
-                        for x in inds_x[0]:
-                            df_new['Weighted Return'][x] = 0 
+                        # inds_x = np.where(np.isnan(df_new['Weighted Return']))
+                        # for x in inds_x[0]:
+                        #     df_new['Weighted Return'][x] = 0 
 
-                        inds_x1 = np.where(np.isnan(df_new['Return']))
-                        for x1 in inds_x1[0]:
-                            df_new['Return'][x1] = 0 
+                        # inds_x1 = np.where(np.isnan(df_new['Return']))
+                        # for x1 in inds_x1[0]:
+                        #     df_new['Return'][x1] = 0 
                             # print(df_new['Date'][x])
-
+                        df_new['Weighted Return'] = df_new['Weighted Return'].fillna(0)
+                        df_new['Return'] = df_new['Return'].fillna(0)
 
                         df_new['Return'] = df_new['Return'] + df_new['Weighted Return']
                         df_overall = df_new

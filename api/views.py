@@ -1164,16 +1164,16 @@ def read_strategy_returns(request):
     num_pages = 1
     total_records = 0 
     tranObjs = StrategyReturns.objects.none()
-    strategy_name = get_param(request,'strategy_name',None)
+    strategy_id = get_param(request,'strategy_id',None)
     result['strategy'] = {}
     result['returns'] = []
 
     all_strategies_list = list(map(lambda x : { 'value':x.name,'label': x.name.upper() } ,StrategyDetails.objects.all()))
     filters['strategies'] = all_strategies_list
 
-    if strategy_name != None and strategy_name != "":
+    if strategy_id != None and strategy_id != "":
         # list_strategy = strategy_name.split(",")
-        strategies = StrategyDetails.objects.filter(name = strategy_name)
+        strategies = StrategyDetails.objects.filter(id = strategy_id)
         if strategies.count() >0:
             strategy = strategies[0]
             strat_dict = {'id':strategy.id

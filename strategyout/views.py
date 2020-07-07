@@ -65,7 +65,7 @@ def random_2_asset(update = False):
 def momentum_strategy(months = 6, pickup_percentile = 5, update = False):
     if ((months <= 18) and (months > 0)):
         strategy = CheckStrategy.create_strategy(
-            name="Long only momentum strategy | Portfolio update frequency =" + str(months) + " months",
+            name="Long only momentum strategy; Portfolio update frequency :" + str(months) + " months" + "; percentile pickup : "+ str(pickup_percentile)+ "%",
             description="Selecting top " + str(pickup_percentile) + " percent assets for the portfolio every " + str(months) + "months. Equi weighted distribution of assets. Long Only for the postions" 
         )
         strategy = strategy['output'][0]
@@ -81,7 +81,7 @@ def momentum_strategy(months = 6, pickup_percentile = 5, update = False):
             if ((i-month_shift) % months == 0 ):
                 portfolio_options = MonthlyReturn.objects.filter(date = months_list[i]).order_by("-return_" + str(months) + "m")
                 total_options = portfolio_options.count()
-                if total_options >= 2:
+                if total_options >= 50:
                     print("Options:"  + str(total_options))
                     options_to_select = (round(total_options * pickup_percentile / 100 ,0) + 1)
                     print("Options to select:"  + str(options_to_select))

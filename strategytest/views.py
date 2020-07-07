@@ -203,7 +203,7 @@ class CheckStrategy:
             df_final['Drawdown'][k] = drawdown
             df_final['Cumulative Return'][k] = port_return
             
-
+            print(df_final.iloc[[k]])
             if update:
                 strategy_return = StrategyReturns.objects.filter(date = df_final['Date'][k],strategy=strategy).order_by('Date')                    
                 if strategy_return.count() > 0:
@@ -231,7 +231,7 @@ class CheckStrategy:
                     ,drawdown            = drawdown
                     ,cumulative_return   = port_return
                 )
-        print(df_final)
+        
         volatility = df_final['Return'].std() * math.sqrt(245)
         average_return = df_final['Return'].mean() * 245
         sharpe_ratio = ((average_return - risk_free_rate)/volatility)

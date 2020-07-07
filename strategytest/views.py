@@ -120,11 +120,12 @@ class CheckStrategy:
                         # for x in inds_x[0]:
                         #     df_new['Weighted Return'][x] = 0.0 
                         try:
+                            print(df_new)
                             df_new['Weighted Return'] = df_new['Weighted Return'].fillna(0)
                         except:
                             print(df_new)
-                            exit
-                            
+                            exit()
+
                         df_new['Return'] = df_new['Return'].fillna(0)
 
                         # inds_x1 = np.where(np.isnan(df_new['Return']))

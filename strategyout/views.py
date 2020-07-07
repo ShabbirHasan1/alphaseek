@@ -65,8 +65,8 @@ def random_2_asset(update = False):
 def momentum_strategy(frequency=1, return_months = 6, num_stocks = 30, update = False):
     if ((return_months <= 18) and (return_months > 0)):
         strategy = CheckStrategy.create_strategy(
-            name="Long only momentum strategy; Portfolio update frequency :" + str(frequency) + " months" + ";return check = "+ str(return_months)+"; num stocks pickup : "+ str(pickup_percentile)+ "%",
-            description="Selecting top " + str(pickup_percentile) + " assets for the portfolio every " + str(frequency) + "months. " + ";return check = "+ str(return_months)+ "; Equi weighted distribution of assets. Long Only for the postions" 
+            name="Long only momentum strategy; Portfolio update frequency :" + str(frequency) + " months" + ";return check = "+ str(return_months)+"; num stocks pickup : "+ str(num_stocks),
+            description="Selecting top " + str(num_stocks) + " assets for the portfolio every " + str(frequency) + "months. " + ";return check = "+ str(return_months)+ "; Equi weighted distribution of assets. Long Only for the postions" 
         )
         strategy = strategy['output'][0]
         # logic

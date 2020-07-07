@@ -202,6 +202,7 @@ class CheckStrategy:
             df_final['HWM'][k] = hwm
             df_final['Drawdown'][k] = drawdown
             df_final['Cumulative Return'][k] = port_return
+            
 
             if update:
                 strategy_return = StrategyReturns.objects.filter(date = df_final['Date'][k],strategy=strategy).order_by('Date')                    
@@ -223,14 +224,14 @@ class CheckStrategy:
                     )
             else:
                 StrategyReturns.objects.create(
-                    strategy            = strategy
+                    strategy             = strategy
                     ,date                = df_final['Date'][k]
                     ,return_strategy     = df_final['Return'][k]
                     ,high_water_mark     = hwm
                     ,drawdown            = drawdown
                     ,cumulative_return   = port_return
                 )
-
+        print(df_final)
         volatility = df_final['Return'].std() * math.sqrt(245)
         average_return = df_final['Return'].mean() * 245
         sharpe_ratio = ((average_return - risk_free_rate)/volatility)

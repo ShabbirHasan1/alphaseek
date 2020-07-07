@@ -1199,7 +1199,7 @@ def read_strategy_returns(request):
             drawdown      = list(map(lambda x : round(x.drawdown,3),sub_strat_data))      
             cumulative_return   = list(map(lambda x : round(x.cumulative_return,3),sub_strat_data))
             strategy_name = strategy.name
-            column_list = ['Date','Return','HWM','Drawdown','Cum Return']
+            # column_list = ['Date','Return','HWM','Drawdown','Cum Return']
             
             data_dict =    {
                             'Date':dates_sub_strat,

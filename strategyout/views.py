@@ -62,11 +62,11 @@ def random_2_asset(update = False):
     CheckStrategy.alpha_check(strategy=strategy)
     return "Strategy Created and Calculated"
 
-def momentum_strategy(months = 6, pickup_percentile = 5, update = False):
-    if ((months <= 18) and (months > 0)):
+def momentum_strategy(frequency=1, return_months = 6, pickup_percentile = 5, update = False):
+    if ((return_months <= 18) and (return_months > 0)):
         strategy = CheckStrategy.create_strategy(
-            name="Long only momentum strategy; Portfolio update frequency :" + str(months) + " months" + "; percentile pickup : "+ str(pickup_percentile)+ "%",
-            description="Selecting top " + str(pickup_percentile) + " percent assets for the portfolio every " + str(months) + "months. Equi weighted distribution of assets. Long Only for the postions" 
+            name="Long only momentum strategy; Portfolio update frequency :" + str(frequency) + " months" + ";return check = "+ str(return_months)+"; percentile pickup : "+ str(pickup_percentile)+ "%",
+            description="Selecting top " + str(pickup_percentile) + " percent assets for the portfolio every " + str(frequency) + "months. " + ";return check = "+ str(return_months)+ "; Equi weighted distribution of assets. Long Only for the postions" 
         )
         strategy = strategy['output'][0]
         # logic
@@ -78,8 +78,8 @@ def momentum_strategy(months = 6, pickup_percentile = 5, update = False):
             StrategyPortfolio.objects.filter(strategy = strategy).delete()
         month_shift = 0 
         for i in range(0,total_months):
-            if ((i-month_shift) % months == 0 ):
-                portfolio_options = MonthlyReturn.objects.filter(date = months_list[i]).order_by("-return_" + str(months) + "m")
+            if ((i-month_shift) % frequency == 0 ):
+                portfolio_options = MonthlyReturn.objects.filter(date = months_list[i]).order_by("-return_" + str(return_months) + "m")
                 total_options = portfolio_options.count()
                 if total_options >= 100:
                     options_to_select = (round(total_options * pickup_percentile / 100 ,0) + 1)

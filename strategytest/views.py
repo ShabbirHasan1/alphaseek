@@ -113,12 +113,12 @@ class CheckStrategy:
                                     on='Date', 
                                     how='outer')
 
-                        inds_x = np.where(np.isnull(df_new['Weighted Return']))
+                        inds_x = np.where(np.isnan(df_new['Weighted Return']))
                         for x in inds_x[0]:
                             df_new['Weighted Return'][x] = 0.0 
                             # print(df_new['Date'][x])
 
-                        inds_x1 = np.where(np.isnull(df_new['Return']))
+                        inds_x1 = np.where(np.isnan(df_new['Return']))
                         for x1 in inds_x1[0]:
                             df_new['Return'][x1] = 0 
                             # print(df_new['Date'][x])
@@ -147,11 +147,11 @@ class CheckStrategy:
                                     df_port[['Date', 'Weighted Return']],
                                     on='Date', 
                                     how='outer')
-                        inds_x = np.where(np.isnull(df_new['Weighted Return']))
+                        inds_x = np.where(np.isnan(df_new['Weighted Return']))
                         for x in inds_x[0]:
                             df_new['Weighted Return'][x] = 0 
 
-                        inds_x1 = np.where(np.isnull(df_new['Return']))
+                        inds_x1 = np.where(np.isnan(df_new['Return']))
                         for x1 in inds_x1[0]:
                             df_new['Return'][x1] = 0 
                             # print(df_new['Date'][x])

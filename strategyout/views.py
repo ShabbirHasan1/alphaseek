@@ -70,7 +70,7 @@ def momentum_strategy(frequency=1, return_months = 6, num_stocks = 30, update = 
         )
         strategy = strategy['output'][0]
         # logic
-        all_monthly_returns = MonthlyReturn.objects.all().order_by('date')
+        all_monthly_returns = MonthlyReturn.objects.filter(date__gt="2001-12-31").order_by('date')
         months_list = list(map(lambda x : x.date,all_monthly_returns))
         months_list = list(dict.fromkeys(months_list))
         total_months = len(months_list)

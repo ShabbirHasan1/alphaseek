@@ -182,7 +182,6 @@ class CheckStrategy:
             
             # df_final = df_overall
             
-        
         df_final['HWM'] = 1.0
         df_final['Drawdown'] = 0.0
         df_final['Cumulative Return'] = 0.0
@@ -193,6 +192,8 @@ class CheckStrategy:
         # total_len_df = 30
         df_final["Date"] = pd.to_datetime(df_final["Date"])
         df_final = df_final.sort_values(by='Date')
+        df_final = df_final.reset_index()
+
         for k in range(total_len_df):
             port_return = port_return * ( 1.0 + df_final['Return'][k])
             # print(port_return)
@@ -202,8 +203,8 @@ class CheckStrategy:
             df_final['HWM'][k] = hwm
             df_final['Drawdown'][k] = drawdown
             df_final['Cumulative Return'][k] = port_return
-            
             print(df_final.iloc[[k]])
+
             if update:
                 strategy_return = StrategyReturns.objects.filter(date = df_final['Date'][k],strategy=strategy).order_by('Date')                    
                 if strategy_return.count() > 0:

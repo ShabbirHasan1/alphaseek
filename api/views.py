@@ -1166,7 +1166,7 @@ def read_strategy_returns(request):
     tranObjs = StrategyReturns.objects.none()
     strategy_id = get_param(request,'strategy_id',None)
     result['strategy'] = {}
-    result['returns'] = []
+    result['returns'] = {}
 
     all_strategies_list = list(map(lambda x : { 'value':x.name,'label': x.name.upper() } ,StrategyDetails.objects.all()))
     filters['strategies'] = all_strategies_list
@@ -1208,14 +1208,14 @@ def read_strategy_returns(request):
                             'Drawdown':drawdown,
                             'Cum Return':cumulative_return
                             }
-            
-            df_final = pd.DataFrame(data_dict, columns = column_list)
-            total_dates = len(df_final)
-            for i in range(total_dates):       
-                prices_dict = {}
-                for col in column_list:
-                    prices_dict[col] = df_final[col][i]
-                result['returns'].append(prices_dict)            
+            result['returns'] = data_dict
+            # df_final = pd.DataFrame(data_dict, columns = column_list)
+            # total_dates = len(df_final)
+            # for i in range(total_dates):       
+            #     prices_dict = {}
+            #     for col in column_list:
+            #         prices_dict[col] = df_final[col][i]
+            #     result['returns'].append(prices_dict)        
             message  = "Success!"
             success = True
         else:
